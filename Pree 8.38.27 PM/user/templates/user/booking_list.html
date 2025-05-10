@@ -1,0 +1,1139 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rental Agreements</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #010101;
+      --primary-hover: #050510;
+      --secondary-color: #6c757d;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #3b82f6;
+      --light-color: #f3f4f6;
+      --dark-color: #1f2937;
+      --border-radius: 10px;
+      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      display: flex; /* Changed from grid to flex */
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 240px;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: all 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .logo-container span {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .menu ul, .report ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li, .report li {
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .menu li i, .report li i {
+      margin-right: 12px;
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .menu li:hover, .report li:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .menu li.active {
+      background-color: white;
+      color: var(--primary-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu li a, .report li a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .report {
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    .report h4 {
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      padding-left: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 1px;
+    }
+
+    .logout {
+      background-color: rgba(239, 68, 68, 0.2);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 30px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .logout:hover {
+      background-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .logout i {
+      margin-right: 10px;
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      margin-left: 280px; /* Match sidebar width + padding */
+      transition: all 0.3s ease;
+      width: calc(100% - 280px); /* Ensure content doesn't extend beyond viewport */
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      background-color: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
+
+    .header-content h1 {
+      font-size: 24px;
+      margin: 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-content h1 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    .date {
+      margin: 5px 0 0;
+      color: var(--secondary-color);
+      font-size: 14px;
+    }
+
+    .search-notification {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      background-color: var(--light-color);
+      border-radius: 30px;
+      padding: 5px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 8px 10px;
+      font-family: 'Poppins', sans-serif;
+      width: 200px;
+    }
+
+    .search button {
+      background: var(--primary-color);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .search button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .notification {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notification i {
+      font-size: 22px;
+      color: var(--secondary-color);
+      transition: all 0.3s ease;
+    }
+
+    .notification i:hover {
+      color: var(--primary-color);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--danger-color);
+      color: white;
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* Rental Section Styling */
+    .rental-section {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--box-shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header h2 i {
+      color: var(--primary-color);
+    }
+
+    .action-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .action-btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      font-size: 12px;
+      color: var(--secondary-color);
+      margin-bottom: 5px;
+    }
+
+    .filter-group select, .filter-group input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+    }
+
+    .filter-group select:focus, .filter-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      align-self: flex-end;
+      margin-top: 20px;
+    }
+
+    .btn-filter {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-filter:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-reset {
+      background-color: var(--light-color);
+      color: var(--dark-color);
+      border: 1px solid #ddd;
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+      background-color: #e5e7eb;
+    }
+
+    /* Table Styling */
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--border-radius);
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      font-size: 14px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .styled-table thead tr {
+      background-color: var(--primary-color);
+      color: white;
+      text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 15px;
+      border-bottom: 1px solid #f2f2f2;
+    }
+
+    .styled-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .styled-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .status.active {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+    }
+
+    .status.pending {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--info-color);
+    }
+
+    .status.expired {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
+    .payment-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .payment-status.paid {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+    }
+
+    .payment-status.pending {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning-color);
+    }
+
+    .payment-status.overdue {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: stretch; /* Changed from flex-start to stretch */
+      width: 100%; /* Ensure full width */
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 12px;
+      display: flex; /* Changed from inline-flex to flex */
+      align-items: center;
+      justify-content: center; /* Center content */
+      gap: 5px;
+      transition: all 0.3s ease;
+      width: 100%; /* Full width to stack properly */
+      box-sizing: border-box; /* Include padding in width */
+    }
+
+    .btn-view {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-view:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-renew {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .btn-renew:hover {
+      background-color: #0da271;
+    }
+
+    .btn-pay {
+      background-color: var(--warning-color);
+      color: white;
+    }
+
+    .btn-pay:hover {
+      background-color: #d97706;
+    }
+
+    .btn-delete {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-delete:hover {
+      background-color: #dc2626;
+    }
+    
+    .btn-terminate {
+      background-color: var(--warning-color);
+      color: white;
+    }
+    
+    .btn-terminate:hover {
+      background-color: #d97706;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--secondary-color);
+      font-style: italic;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 25px;
+      gap: 5px;
+    }
+
+    .pagination-item {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      background-color: white;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--dark-color);
+    }
+
+    .pagination-item:hover {
+      background-color: var(--light-color);
+    }
+
+    .pagination-item.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 70px;
+        padding: 20px 10px;
+      }
+
+      .main-content {
+        margin-left: 90px;
+        width: calc(100% - 90px);
+      }
+
+      .logo-container span, .menu li span, .report h4, .report li span, .logout span {
+        display: none;
+      }
+
+      .logo-container {
+        justify-content: center;
+      }
+
+      .menu li, .report li {
+        justify-content: center;
+        padding: 15px 10px;
+      }
+
+      .menu li i, .report li i {
+        margin-right: 0;
+        font-size: 20px;
+      }
+
+      .logout {
+        padding: 15px 0;
+      }
+
+      .logout i {
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .search-notification {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filter-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-filter, .btn-reset {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn-action {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Logo Section -->
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li>
+            <a href="{% url 'homeowner_payment_history' %}">
+              <i class="fas fa-wallet"></i> 
+              <span>Payment History</span>
+            </a>
+          </li>
+          <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+<li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
+
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+     
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <p class="date" id="currentDateTime"><i class="fas fa-calendar-alt"></i> Loading...</p>
+        </div>
+        <div class="search-notification">
+         
+          <div class="notification">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">0</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Rental List Section -->
+      <section class="rental-section">
+        <div class="section-header">
+          <h2><i class="fas fa-file-contract"></i> All Rentals</h2>
+          
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <label for="property-filter">Property</label>
+            <select id="property-filter">
+              <option value="">All Properties</option>
+              <option value="property1">Property 1</option>
+              <option value="property2">Property 2</option>
+              <option value="property3">Property 3</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="tenant-filter">Tenant</label>
+            <select id="tenant-filter">
+              <option value="">All Tenants</option>
+              <option value="tenant1">Tenant 1</option>
+              <option value="tenant2">Tenant 2</option>
+              <option value="tenant3">Tenant 3</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="status-filter">Rental Status</label>
+            <select id="status-filter">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="payment-filter">Payment Status</label>
+            <select id="payment-filter">
+              <option value="">All Statuses</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+              <option value="overdue">Overdue</option>
+            </select>
+          </div>
+          
+          <div class="filter-buttons">
+            <button class="btn-filter">
+              <i class="fas fa-filter"></i> Apply Filters
+            </button>
+            <button class="btn-reset">
+              <i class="fas fa-redo"></i> Reset
+            </button>
+          </div>
+        </div>
+        
+        <!-- Rentals Table -->
+        <div class="table-container">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Property</th>
+                <th>Tenant</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Monthly Rent</th>
+                <th>Booking Status</th>
+                <th>Payment Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if is_homeowner %}
+                {% if bookings %}
+                  {% for booking in bookings %}
+                  <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.property.title }}</td>
+                    <td>{{ booking.tenant.email }}</td>
+                    <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span class="date-text">
+                          {% if booking.end_date %}{{ booking.end_date|date:"M d, Y" }}{% else %}N/A{% endif %}
+                      </span>
+                  </td>
+            
+                  {% if booking.type == 'rental' %}
+                  <td>NPR {{ booking.monthly_rent|floatformat:2 }}</td>
+                  <td>
+                    <span class="status {{ booking.status }}">
+                      <i class="fas fa-{% if booking.status == 'active' %}check-circle{% elif booking.status == 'pending' %}clock{% elif booking.status == 'expired' %}calendar-times{% endif %}"></i> 
+                      {{ booking.status|capfirst }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="payment-status {{ booking.payment_status }}">
+                      <i class="fas fa-{% if booking.payment_status == 'paid' %}check-circle{% elif booking.payment_status == 'pending' %}clock{% elif booking.payment_status == 'overdue' %}exclamation-circle{% endif %}"></i> 
+                      {{ booking.payment_status|capfirst }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <!-- Add any rental-specific actions -->
+                      <form method="POST" action="{% url 'terminate_lease' booking.id %}" onsubmit="return confirm('Are you sure you want to terminate this lease?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-action btn-terminate">
+                          <i class="fas fa-times-circle"></i> Terminate
+                        </button>
+                      </form>
+                      
+                      <form method="POST" action="{% url 'delete_lease' booking.id %}" onsubmit="return confirm('Are you sure you want to delete this lease permanently?');" style="width: 100%;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-action btn-delete">
+                          <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                      </form>
+                
+                    </div>
+                  </td>
+                
+                {% elif booking.type == 'rental_request' %}
+                  <td>Pending Signature</td>
+                  <td>NPR {{ booking.monthly_rent|floatformat:2 }}</td>
+                  <td>
+                    <span class="status pending">
+                      <i class="fas fa-clock"></i> Inactive
+                    </span>
+                  </td>
+
+                  <td>
+                    <div class="actions">
+                      {% if booking.lease_agreement and booking.lease_agreement.id %}
+                      <a href="{% url 'view_rental_lease' booking.lease_agreement.id %}" class="btn-action btn-view">
+                        <i class="fas fa-file-signature"></i> View Lease
+                      </a>
+                      {% endif %}
+                      
+                      <!-- Only Delete button for rental requests (no Terminate) -->
+                      <form method="POST" action="{% url 'delete_rental_request' booking.id %}" onsubmit="return confirm('Are you sure you want to delete this rental request permanently?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-action btn-delete">
+                          <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                      </form>
+                    
+                    </div>
+                  </td>
+                {% endif %}
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="9" class="no-data">No active rentals or pending lease requests found.</td>
+                  </tr>
+                {% endif %}
+              {% else %}
+                {% if bookings %}
+                  {% for booking in bookings %}
+                  <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.property.title }}</td>
+                    <td>{{ booking.tenant.username }}</td>
+                    <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                    <td>{{ booking.end_date|date:"M d, Y" }}</td>
+                    <td>NPR {{ booking.rent_amount|floatformat:2 }}</td>
+                    <td>
+                      <span class="status {% if booking.is_active %}active{% else %}expired{% endif %}">
+                        <i class="fas fa-{% if booking.is_active %}check-circle{% else %}calendar-times{% endif %}"></i> 
+                        {% if booking.is_active %}Active{% else %}Expired{% endif %}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="payment-status pending">
+                        <i class="fas fa-clock"></i> Pending
+                      </span>
+                    </td>
+                    <td>
+                      <div class="actions">
+                        <a href="{% url 'tenant_payment_history' %}" class="btn-action btn-view">
+                          <i class="fas fa-history"></i> Payment History
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="9" class="no-data">No rental agreements found.</td>
+                  </tr>
+                {% endif %}
+              {% endif %}
+            </tbody>
+            
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+          <a href="#" class="pagination-item"><i class="fas fa-angle-double-left"></i></a>
+          <a href="#" class="pagination-item"><i class="fas fa-angle-left"></i></a>
+          <a href="#" class="pagination-item active">1</a>
+          <a href="#" class="pagination-item">2</a>
+          <a href="#" class="pagination-item">3</a>
+          <a href="#" class="pagination-item"><i class="fas fa-angle-right"></i></a>
+          <a href="#" class="pagination-item"><i class="fas fa-angle-double-right"></i></a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Set current date and time
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateElement = document.getElementById('currentDateTime');
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateElement.innerHTML = '<i class="fas fa-calendar-alt mr-2"></i> ' + now.toLocaleDateString('en-US', options);
+      
+      // Toggle sidebar on mobile devices
+      const menuToggle = document.createElement('button');
+      menuToggle.classList.add('menu-toggle');
+      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+      menuToggle.style.position = 'fixed';
+      menuToggle.style.top = '20px';
+      menuToggle.style.left = '20px';
+      menuToggle.style.zIndex = '1001';
+      menuToggle.style.background = 'var(--primary-color)';
+      menuToggle.style.color = 'white';
+      menuToggle.style.border = 'none';
+      menuToggle.style.borderRadius = '5px';
+      menuToggle.style.padding = '8px 10px';
+      menuToggle.style.display = 'none';
+      document.body.appendChild(menuToggle);
+      
+      function handleResize() {
+        if (window.innerWidth <= 768) {
+          menuToggle.style.display = 'block';
+        } else {
+          menuToggle.style.display = 'none';
+        }
+      }
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      
+      menuToggle.addEventListener('click', function() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+      });
+      
+      // Search functionality
+      const searchInput = document.getElementById('rentalSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          const rows = document.querySelectorAll('.styled-table tbody tr');
+          
+          rows.forEach(row => {
+            let found = false;
+            const cells = row.querySelectorAll('td');
+            
+            cells.forEach(cell => {
+              if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                found = true;
+              }
+            });
+            
+            if (found) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
+      
+      // Filter functionality
+      const propertyFilter = document.getElementById('property-filter');
+      const tenantFilter = document.getElementById('tenant-filter');
+      const statusFilter = document.getElementById('status-filter');
+      const paymentFilter = document.getElementById('payment-filter');
+      const applyFilters = document.querySelector('.btn-filter');
+      const resetFilters = document.querySelector('.btn-reset');
+      
+      if (applyFilters) {
+        applyFilters.addEventListener('click', function() {
+          const propertyValue = propertyFilter ? propertyFilter.value.toLowerCase() : '';
+          const tenantValue = tenantFilter ? tenantFilter.value.toLowerCase() : '';
+          const statusValue = statusFilter ? statusFilter.value.toLowerCase() : '';
+          const paymentValue = paymentFilter ? paymentFilter.value.toLowerCase() : '';
+          
+          const rows = document.querySelectorAll('.styled-table tbody tr');
+          
+          rows.forEach(row => {
+            const property = row.cells[1].textContent.toLowerCase();
+            const tenant = row.cells[2].textContent.toLowerCase();
+            const statusText = row.cells[6].textContent.toLowerCase();
+            const paymentText = row.cells[7].textContent.toLowerCase();
+            
+            let propertyMatch = propertyValue === '' || property.includes(propertyValue);
+            let tenantMatch = tenantValue === '' || tenant.includes(tenantValue);
+            let statusMatch = statusValue === '' || statusText.includes(statusValue);
+            let paymentMatch = paymentValue === '' || paymentText.includes(paymentValue);
+            
+            if (propertyMatch && tenantMatch && statusMatch && paymentMatch) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
+      
+      if (resetFilters) {
+        resetFilters.addEventListener('click', function() {
+          if (propertyFilter) propertyFilter.value = '';
+          if (tenantFilter) tenantFilter.value = '';
+          if (statusFilter) statusFilter.value = '';
+          if (paymentFilter) paymentFilter.value = '';
+          
+          // Reset display of all rows
+          const rows = document.querySelectorAll('.styled-table tbody tr');
+          rows.forEach(row => {
+            row.style.display = '';
+          });
+        });
+      }
+      
+      // Payment handling
+      const payButtons = document.querySelectorAll('.btn-pay');
+      payButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const row = this.closest('tr');
+          const property = row.cells[1].textContent;
+          const tenant = row.cells[2].textContent;
+          const rent = row.cells[5].textContent;
+          
+          if (confirm(`Process payment of ${rent} for ${property} rented by ${tenant}?`)) {
+            // This would connect to your payment processing system
+            alert('Payment processing would happen here.');
+          }
+        });
+      });
+      
+      // Renewal handling
+      const renewButtons = document.querySelectorAll('.btn-renew');
+      renewButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const row = this.closest('tr');
+          const property = row.cells[1].textContent;
+          const tenant = row.cells[2].textContent;
+          
+          if (confirm(`Renew rental agreement for ${property} with tenant ${tenant}?`)) {
+            // This would open the renewal form
+            alert('Rental agreement renewal form would open here.');
+          }
+        });
+      });
+      
+      // Show expiring soon warning
+      const rows = document.querySelectorAll('.styled-table tbody tr');
+      rows.forEach(row => {
+        // Check if this is an actual data row (not the "no data" message)
+        if (row.cells.length > 3) {
+          const endDateCell = row.cells[4];
+          const endDateText = endDateCell.textContent.trim();
+          
+          if (endDateText) {
+            const endDate = new Date(endDateText);
+            const today = new Date();
+            const diffTime = endDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+              
+              // Add expiring soon label
+              if (!endDateCell.querySelector('.expiring-label')) {
+                const expiringLabel = document.createElement('span');
+                expiringLabel.className = 'expiring-label';
+                expiringLabel.style.display = 'block';
+                expiringLabel.style.fontSize = '10px';
+                expiringLabel.style.marginTop = '2px';
+                endDateCell.appendChild(expiringLabel);
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+{% endblock %}

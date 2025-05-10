@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Rentals | PayTrack</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body, html {
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #040404 0%, #000000 100%);
+  padding: 20px;
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.main-content {
+  margin-left: 240px; /* same as sidebar width */
+  padding: 30px;
+  width: calc(100% - 240px);
+}
+    body {
+      background: #f8fafc;
+    }
+    .property-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+    }
+    .highlight {
+      background-color: #f1f5f9;
+      border-left: 4px solid #2563eb;
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
+
+    <!-- Sidebar -->
+    <!-- Sidebar -->
+<aside class="sidebar">
+    <div class="logo-container">
+      <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+      <span>PayTrack</span>
+    </div>
+    <nav class="menu">
+      <ul>
+        <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+        <li class="active"><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+        <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+        <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-file-signature"></i> <span>Pending Leases</span></a></li>
+        <li>
+          <a href="{% url 'tenant_signed_leases' %}" class="nav-link">
+            <i class="fas fa-file-contract"></i> Signed Leases
+          </a></li>
+      </ul>
+    </nav>
+   
+    <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+      <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+    </button>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <h1 class="text-3xl font-semibold mb-1 text-blue-700 flex items-center gap-2">
+          <i class="fas fa-home"></i> My Rentals
+        </h1>
+        <p class="text-gray-600">Here are the properties you’ve rented with payment and owner details.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% if rentals %}
+          {% for rent in rentals %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition hover:scale-[1.02]">
+              <img src="{{ rent.property.image.url }}" alt="{{ rent.property.title }}" class="h-48 w-full object-cover">
+      
+              <div class="p-5 space-y-3">
+                <h2 class="text-xl font-semibold text-gray-800">{{ rent.property.title }}</h2>
+                <p class="text-sm text-gray-500 flex items-center"><i class="fas fa-map-marker-alt mr-1 text-blue-500"></i> {{ rent.property.location }}</p>
+                <p class="text-lg text-indigo-600 font-semibold">NPR {{ rent.rent_amount|floatformat:2 }}</p>
+      
+                <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                  <div><i class="fas fa-bed mr-1 text-gray-500"></i>{{ rent.property.bedrooms }} Beds</div>
+                  <div><i class="fas fa-bath mr-1 text-gray-500"></i>{{ rent.property.bathrooms }} Baths</div>
+                </div>
+      
+                <div class="p-3 rounded bg-blue-50 border-l-4 border-blue-600 text-sm text-gray-700 space-y-1">
+                  <p><strong>Rented Since:</strong> {{ rent.start_date|date:"F d, Y" }}</p>
+                  <p><strong>Next Payment:</strong> {{ rent.next_payment_date|date:"F d, Y" }}</p>
+                  <p><strong>Last Paid:</strong> {{ rent.last_paid_date|date:"F d, Y" }}</p>
+                </div>
+      
+                <div class="text-sm text-gray-700 mt-2 space-y-1">
+                  <p><strong>Owner:</strong> {{ rent.property.homeowner.get_full_name }}</p>
+                  <p><strong>Email:</strong> <a href="mailto:{{ rent.property.homeowner.email }}" class="text-blue-600 hover:underline">{{ rent.property.homeowner.email }}</a></p>
+                </div>
+      
+                <div class="flex flex-col gap-3 mt-5">
+                  <!-- Stripe Rent Payment -->
+                  <button type="button" onclick="startCheckout({{ rent.id }})" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">
+                    <i class="fas fa-wallet mr-1"></i> Pay Rent
+                  </button>
+      
+                  <!-- Maintenance Request -->
+                  <a href="{% url 'submit_maintenance_request' rent.id %}" class="w-full text-center bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded">
+                    <i class="fas fa-tools mr-1"></i> Submit Maintenance Request
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="col-span-3 text-center py-10 text-gray-500">
+            <i class="fas fa-info-circle text-4xl text-blue-400 mb-3"></i>
+            <p class="mb-4">You haven’t rented any properties yet.</p>
+            <a href="{% url 'tenant_property_list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">Browse Properties</a>
+          </div>
+        {% endif %}
+      </div>
+      
+  <script>
+    function startCheckout(rentalId) {
+      fetch(`/tenant/create-checkout-session/${rentalId}/`)
+        .then(res => res.json())
+        .then(data => {
+          const stripe = Stripe(data.stripe_public_key);
+          stripe.redirectToCheckout({ sessionId: data.id });
+        });
+    }
+  </script>
+</body>
+</html>

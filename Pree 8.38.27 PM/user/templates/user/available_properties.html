@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Available Properties | PayTrack</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #040404 0%, #000000 100%);
+  padding: 20px;
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.main-content {
+  margin-left: 240px; /* same as sidebar width */
+  padding: 30px;
+  width: calc(100% - 240px);
+}
+  </style>
+</head>
+
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
+    
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="logo-container">
+      <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+      <span>PayTrack</span>
+    </div>
+    <nav class="menu">
+      <ul>
+        <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+        <li><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+        <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+        <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-file-signature"></i> <span>Pending Leases</span></a></li>
+        <li>
+          <a href="{% url 'tenant_signed_leases' %}" class="nav-link">
+            <i class="fas fa-file-contract"></i> Signed Leases
+          </a></li>
+      </ul>
+    </nav>
+
+    <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+      <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+    </button>
+  </aside>
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h1 class="text-2xl font-semibold mb-2"><i class="fas fa-building"></i> Available Properties</h1>
+        <p class="text-gray-600">Browse and rent a property of your choice.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% if properties %}
+          {% for property in properties %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-300">
+              {% if property.get_primary_image %}
+  <img src="{{ property.get_primary_image.url }}" alt="{{ property.title }}" class="h-48 w-full object-cover">
+{% else %}
+  <div class="h-48 w-full bg-gray-200 flex items-center justify-center">
+    <i class="fas fa-home text-gray-400 text-5xl"></i>
+  </div>
+{% endif %}
+              <div class="p-4">
+                <h2 class="text-lg font-semibold">{{ property.title }}</h2>
+                <p class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt"></i> {{ property.location }}</p>
+                <p class="text-blue-600 font-bold mt-2">NPR {{ property.price|floatformat:2 }}</p>
+                <div class="flex justify-between text-sm text-gray-600 mt-3">
+                  <span><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</span>
+                  <span><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</span>
+                </div>
+                <p class="mt-2 text-gray-700 text-sm">{{ property.description|truncatechars:100 }}</p>
+                <div class="mt-4 text-right">
+                  <a href="{% url 'rent_property' property.id %}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">
+                    Rent Now <i class="fas fa-arrow-right ml-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="col-span-3 text-center text-gray-600 py-10">
+            <i class="fas fa-info-circle text-4xl text-blue-400 mb-2"></i>
+            <p>No available properties at the moment.</p>
+          </div>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>

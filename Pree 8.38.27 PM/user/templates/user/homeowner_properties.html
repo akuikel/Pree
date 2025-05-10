@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Properties | PayTrack</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+      width: calc(100% - 240px);
+    }
+    
+    .property-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .status-available {
+      background-color: #D1FAE5;
+      color: #065F46;
+    }
+    
+    .status-rented {
+      background-color: #E0F2FE;
+      color: #0369A1;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li>
+            <a href="{% url 'homeowner_payment_history' %}">
+              <i class="fas fa-wallet"></i> 
+              <span>Payment History</span>
+            </a>
+          </li>
+          <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+<li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
+
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header section -->
+      <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <div class="flex flex-col md:flex-row justify-between md:items-center">
+          <div>
+            <h1 class="text-3xl font-semibold mb-1 text-blue-700">My Properties</h1>
+            <p class="text-gray-600">Manage your real estate portfolio</p>
+          </div>
+          <a href="{% url 'add_property' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mt-4 md:mt-0">
+            <i class="fas fa-plus"></i> Add New Property
+          </a>
+        </div>
+      </div>
+
+      <!-- Property Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Total Properties</p>
+              <h3 class="text-2xl font-semibold">{{ properties.count }}</h3>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+              <i class="fas fa-building text-blue-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Available</p>
+              <h3 class="text-2xl font-semibold">{{ available_count }}</h3>
+            </div>
+            <div class="bg-green-100 p-3 rounded-lg">
+              <i class="fas fa-check-circle text-green-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Rented</p>
+              <h3 class="text-2xl font-semibold">{{ rented_count }}</h3>
+            </div>
+            <div class="bg-indigo-100 p-3 rounded-lg">
+              <i class="fas fa-key text-indigo-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Total Income</p>
+              <h3 class="text-2xl font-semibold">${{ total_income }}</h3>
+            </div>
+            <div class="bg-yellow-100 p-3 rounded-lg">
+              <i class="fas fa-dollar-sign text-yellow-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages display -->
+      {% if messages %}
+        <div class="mb-8">
+          {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} p-4 mb-4 rounded-lg">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Properties List -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for property in properties %}
+          <div class="bg-white rounded-lg shadow-md overflow-hidden property-card">
+            <!-- Property Image -->
+            <!-- Property Image -->
+<div class="h-48 overflow-hidden">
+  {% if property.get_primary_image %}
+    <img src="{{ property.get_primary_image.url }}" alt="{{ property.title }}" class="w-full h-full object-cover">
+  {% else %}
+    <div class="bg-gray-200 h-full flex items-center justify-center">
+      <i class="fas fa-home text-gray-400 text-5xl"></i>
+    </div>
+  {% endif %}
+</div>
+
+            
+            <!-- Property Body -->
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="text-xl font-semibold text-gray-800">{{ property.title }}</h3>
+                <span class="status-badge {% if property.is_available %}status-available{% else %}status-rented{% endif %}">
+                  {% if property.is_available %}Available{% else %}Rented{% endif %}
+                </span>
+              </div>
+              
+              <p class="text-gray-600 mb-2"><i class="fas fa-map-marker-alt text-red-500 mr-1"></i> {{ property.location }}</p>
+              
+              <div class="flex space-x-3 mb-3 text-gray-600 text-sm">
+                <span><i class="fas fa-bed mr-1"></i> {{ property.bedrooms }} Bed{% if property.bedrooms != 1 %}s{% endif %}</span>
+                <span><i class="fas fa-bath mr-1"></i> {{ property.bathrooms }} Bath{% if property.bathrooms != 1 %}s{% endif %}</span>
+                <span><i class="fas fa-home mr-1"></i> {{ property.get_property_type_display }}</span>
+              </div>
+              
+              <p class="text-gray-800 font-bold text-xl mb-4">${{ property.price }}</p>
+              
+              <div class="flex items-center justify-between">
+                <div class="flex space-x-2">
+                  <a href="{% url 'edit_property' property.id %}" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm">
+                    <i class="fas fa-edit mr-1"></i> Edit
+                  </a>
+                  <a href="{% url 'delete_property' property.id %}" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1 rounded text-sm">
+                    <i class="fas fa-trash mr-1"></i> Delete
+                  </a>
+                </div>
+                <a href="{% url 'view_property_detail' property.id %}" class="text-blue-600 hover:text-blue-800 text-sm">
+                  Details <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-span-full bg-white rounded-lg shadow-md p-12 text-center">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-home text-gray-300 text-6xl mb-4"></i>
+              <h3 class="text-2xl font-semibold text-gray-700 mb-2">No Properties Yet</h3>
+              <p class="text-gray-500 mb-6">You haven't added any properties to your portfolio.</p>
+              <a href="{% url 'add_property' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                <i class="fas fa-plus"></i> Add Your First Property
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // JavaScript interactions can be added here
+    });
+  </script>
+</body>
+</html> 

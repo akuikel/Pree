@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Details</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #010101;
+      --primary-hover: #050510;
+      --secondary-color: #6c757d;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #3b82f6;
+      --light-color: #f3f4f6;
+      --dark-color: #1f2937;
+      --border-radius: 10px;
+      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      display: flex; /* Changed from grid to flex */
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 240px;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: all 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .logo-container span {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .menu ul, .report ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li, .report li {
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .menu li i, .report li i {
+      margin-right: 12px;
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .menu li:hover, .report li:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .menu li.active {
+      background-color: white;
+      color: var(--primary-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu li a, .report li a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .report {
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    .report h4 {
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      padding-left: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 1px;
+    }
+
+    .report li.active {
+      background-color: white;
+      color: var(--primary-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logout {
+      background-color: rgba(239, 68, 68, 0.2);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 30px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .logout:hover {
+      background-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .logout i {
+      margin-right: 10px;
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      margin-left: 280px; /* Match sidebar width + padding */
+      transition: all 0.3s ease;
+      width: calc(100% - 280px); /* Ensure content doesn't extend beyond viewport */
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      background-color: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
+
+    .header-content h1 {
+      font-size: 24px;
+      margin: 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-content h1 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    .date {
+      margin: 5px 0 0;
+      color: var(--secondary-color);
+      font-size: 14px;
+    }
+
+    .search-notification {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      background-color: var(--light-color);
+      border-radius: 30px;
+      padding: 5px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 8px 10px;
+      font-family: 'Poppins', sans-serif;
+      width: 200px;
+    }
+
+    .search button {
+      background: var(--primary-color);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .search button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .notification {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notification i {
+      font-size: 22px;
+      color: var(--secondary-color);
+      transition: all 0.3s ease;
+    }
+
+    .notification i:hover {
+      color: var(--primary-color);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--danger-color);
+      color: white;
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* Payment Details Section Styling */
+    .payment-section {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--box-shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header h2 i {
+      color: var(--primary-color);
+    }
+
+    .action-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .action-btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      font-size: 12px;
+      color: var(--secondary-color);
+      margin-bottom: 5px;
+    }
+
+    .filter-group select, .filter-group input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+    }
+
+    .filter-group select:focus, .filter-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      align-self: flex-end;
+      margin-top: 20px;
+    }
+
+    .btn-filter {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-filter:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-reset {
+      background-color: var(--light-color);
+      color: var(--dark-color);
+      border: 1px solid #ddd;
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+      background-color: #e5e7eb;
+    }
+
+    /* Stats Cards Styling */
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      box-shadow: var(--box-shadow);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .stat-icon i {
+      font-size: 24px;
+      color: white;
+    }
+
+    .total-paid .stat-icon {
+      background-color: var(--success-color);
+    }
+
+    .pending-payment .stat-icon {
+      background-color: var(--warning-color);
+    }
+
+    .overdue-payment .stat-icon {
+      background-color: var(--danger-color);
+    }
+
+    .total-income .stat-icon {
+      background-color: var(--info-color);
+    }
+
+    .stat-content h3 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 5px;
+    }
+
+    .stat-content p {
+      color: var(--secondary-color);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    /* Table Styling */
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--border-radius);
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      font-size: 14px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .styled-table thead tr {
+      background-color: var(--primary-color);
+      color: white;
+      text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 15px;
+      border-bottom: 1px solid #f2f2f2;
+    }
+
+    .styled-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .styled-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .payment-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .payment-status.paid {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+    }
+
+    .payment-status.pending {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning-color);
+    }
+
+    .payment-status.overdue {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
+    .actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-view {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-view:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-receipt {
+      background-color: var(--info-color);
+      color: white;
+    }
+
+    .btn-receipt:hover {
+      background-color: #2563eb;
+    }
+
+    .btn-pay {
+      background-color: var(--warning-color);
+      color: white;
+    }
+
+    .btn-pay:hover {
+      background-color: #d97706;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--secondary-color);
+      font-style: italic;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 25px;
+      gap: 5px;
+    }
+
+    .pagination-item {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      background-color: white;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--dark-color);
+    }
+
+    .pagination-item:hover {
+      background-color: var(--light-color);
+    }
+
+    .pagination-item.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* Chart Section Styling */
+    .chart-section {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--box-shadow);
+    }
+
+    .chart-container {
+      height: 300px;
+      margin-top: 20px;
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 70px;
+        padding: 20px 10px;
+      }
+
+      .main-content {
+        margin-left: 90px;
+        width: calc(100% - 90px);
+      }
+
+      .logo-container span, .menu li span, .report h4, .report li span, .logout span {
+        display: none;
+      }
+
+      .logo-container {
+        justify-content: center;
+      }
+
+      .menu li, .report li {
+        justify-content: center;
+        padding: 15px 10px;
+      }
+
+      .menu li i, .report li i {
+        margin-right: 0;
+        font-size: 20px;
+      }
+
+      .logout {
+        padding: 15px 0;
+      }
+
+      .logout i {
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .search-notification {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filter-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-filter, .btn-reset {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn-action {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stats-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Logo Section -->
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'booking_list' %}"><i class="fas fa-file-contract"></i> <span>Rentals</span></a></li>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+      <div class="report">
+        <h4>Report</h4>
+        <ul>
+          <li class="active"><a href="{% url 'payment_details' %}"><i class="fas fa-file-alt"></i> <span>Payment Details</span></a></li>
+          <li><a href="{% url 'transactions' %}"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+          <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> <span>Report</span></a></li>
+        </ul>
+      </div>
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <p class="date" id="currentDateTime"><i class="fas fa-calendar-alt"></i> Loading...</p>
+        </div>
+        
+      </header>
+
+      <!-- Stats Cards -->
+      <div class="stats-cards">
+        <div class="stat-card total-paid">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>NPR {{ total_paid|default:"45,000" }}</h3>
+            <p>Total Paid</p>
+          </div>
+        </div>
+        
+        <div class="stat-card pending-payment">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <h3>NPR {{ pending_payment|default:"15,000" }}</h3>
+            <p>Pending Payments</p>
+          </div>
+        </div>
+        
+        <div class="stat-card overdue-payment">
+          <div class="stat-icon">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>NPR {{ overdue_payment|default:"5,000" }}</h3>
+            <p>Overdue Payments</p>
+          </div>
+        </div>
+        
+        <div class="stat-card total-income">
+          <div class="stat-icon">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="stat-content">
+            <h3>NPR {{ total_income|default:"65,000" }}</h3>
+            <p>Total Income</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Chart Section -->
+      <section class="chart-section">
+        <div class="section-header">
+          <h2><i class="fas fa-chart-line"></i> Payment Overview</h2>
+          <div>
+            <select id="chart-period" class="select">
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="chart-container" id="payment-chart">
+          <!-- Chart will be rendered here by JavaScript -->
+          <div style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--secondary-color);">
+            <p>Loading chart...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Payment Details Section -->
+      <section class="payment-section">
+        <div class="section-header">
+          <h2><i class="fas fa-file-alt"></i> Payment Details</h2>
+            <i class="fas fa-download"></i> Export Report
+          </a>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <label for="property-filter">Property</label>
+            <select id="property-filter">
+              <option value="">All Properties</option>
+              <option value="property1">Property 1</option>
+              <option value="property2">Property 2</option>
+              <option value="property3">Property 3</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="status-filter">Payment Status</label>
+            <select id="status-filter">
+              <option value="">All Statuses</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+              <option value="overdue">Overdue</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="date-from">Date From</label>
+            <input type="date" id="date-from">
+          </div>
+          
+          <div class="filter-group">
+            <label for="date-to">Date To</label>
+            <input type="date" id="date-to">
+          </div>
+          
+          <div class="filter-buttons">
+            <button class="btn-filter">
+              <i class="fas fa-filter"></i> Apply Filters
+            </button>
+            <button class="btn-reset">
+              <i class="fas fa-redo"></i> Reset
+            </button>
+          </div>
+        </div>
+        
+        <!-- Payments Table -->
+        <div class="table-container">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th>
+                <th>Property</th>
+                <th>Payment Date</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <td>#{{ payment.id }}</td>
+                  <td>{{ payment.property.title }}</td>
+                  <td>{{ payment.payment_date|date:"M d, Y"|default:"-" }}</td>
+                  <td>{{ payment.due_date|date:"M d, Y" }}</td>
+                  <td>NPR {{ payment.amount|floatformat:2 }}</td>
+                  <td>
+                    <span class="payment-status {% if payment.status == 'paid' %}paid{% elif payment.status == 'pending' %}pending{% elif payment.status == 'overdue' %}overdue{% endif %}">
+                      <i class="fas fa-{% if payment.status == 'paid' %}check-circle{% elif payment.status == 'pending' %}clock{% elif payment.status == 'overdue' %}exclamation-circle{% endif %}"></i> 
+                      {{ payment.get_status_display }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                        <i class="fas fa-eye"></i> View
+                      </a>
+                      <a href="#" class="btn-action btn-receipt">
+                        <i class="fas fa-file-invoice"></i> Receipt
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>#PAY002</td>
+                  <td>Ocean View Studio</td>
+                  <td>-</td>
+                  <td>Mar 15, 2025</td>
+                  <td>NPR 12,000.00</td>
+                  <td>
+                    <span class="payment-status pending">
+                      <i class="fas fa-clock"></i> Pending
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <a href="#" class="btn-action btn-view">
+                        <i class="fas fa-eye"></i> View
+                      </a>
+                      <a href="#" class="btn-action btn-pay">
+                        <i class="fas fa-money-bill-wave"></i> Pay
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>#PAY003</td>
+                  <td>Garden Townhouse</td>
+                  <td>-</td>
+                  <td>Feb 28, 2025</td>
+                  <td>NPR 18,000.00</td>
+                  <td>
+                    <span class="payment-status overdue">
+                      <i class="fas fa-exclamation-circle"></i> Overdue
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <a href="#" class="btn-action btn-view">
+                        <i class="fas fa-eye"></i> View
+                      </a>
+                      <a href="#" class="btn-action btn-pay">
+                        <i class="fas fa-money-bill-wave"></i> Pay
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>#PAY004</td>
+                  <td>Modern City Loft</td>
+                  <td>Mar 3, 2025</td>
+                  <td>Mar 5, 2025</td>
+                  <td>NPR 20,000.00</td>
+                  <td>
+                    <span class="payment-status paid">
+                      <i class="fas fa-check-circle"></i> Paid
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <a href="#" class="btn-action btn-view">
+                        <i class="fas fa-eye"></i> View
+                      </a>
+                      <a href="#" class="btn-action btn-receipt">
+                        <i class="fas fa-file-invoice"></i> Receipt
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>#PAY005</td>
+                  <td>Mountain View Cottage</td>
+                  <td>Feb 28, 2025</td>
+                  <td>Mar 1, 2025</td>
+                  <td>NPR 10,000.00</td>
+                  <td>
+                    <span class="payment-status paid">
+                      <i class="fas fa-check-circle"></i> Paid
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <a href="#" class="btn-action btn-view">
+                        <i class="fas fa-eye"></i> View
+                      </a>
+                      <a href="#" class="btn-action btn-receipt">
+                        <i class="fas fa-file-invoice"></i> Receipt
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+          <a href="#" class="pagination-item"><i class="fas fa-angle-double-left"></i></a>
+          <a href="#" class="pagination-item"><i class="fas fa-angle-left"></i></a>
+          <a href="#" class="pagination-item active">1</a>
+          <a href="#" class="pagination-item">2</a>
+          <a href="#" class="pagination-item">3</a>
+          <a href="#" class="pagination-item"><i class="fas fa-angle-right"></i></a>
+          <a href="#" class="pagination-item"><i class="fas fa-angle-double-right"></i></a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Include Chart.js for payment chart -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  
+  <script>
+    // Set current date and time
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateElement = document.getElementById('currentDateTime');
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateElement.innerHTML = '<i class="fas fa-calendar-alt mr-2"></i> ' + now.toLocaleDateString('en-US', options);
+      
+      // Toggle sidebar on mobile devices
+      const menuToggle = document.createElement('button');
+      menuToggle.classList.add('menu-toggle');
+      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+      menuToggle.style.position = 'fixed';
+      menuToggle.style.top = '20px';
+      menuToggle.style.left = '20px';
+      menuToggle.style.zIndex = '1001';
+      menuToggle.style.background = 'var(--primary-color)';
+      menuToggle.style.color = 'white';
+      menuToggle.style.border = 'none';
+      menuToggle.style.borderRadius = '5px';
+      menuToggle.style.padding = '8px 10px';
+      menuToggle.style.display = 'none';
+      document.body.appendChild(menuToggle);
+      
+      function handleResize() {
+        if (window.innerWidth <= 768) {
+          menuToggle.style.display = 'block';
+        } else {
+          menuToggle.style.display = 'none';
+        }
+      }
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      
+      menuToggle.addEventListener('click', function() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+      });
+      
+      // Search functionality
+      const searchInput = document.getElementById('paymentSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          const rows = document.querySelectorAll('.styled-table tbody tr');
+          
+          rows.forEach(row => {
+            let found = false;
+            const cells = row.querySelectorAll('td');
+            
+            cells.forEach(cell => {
+              if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                found = true;
+              }
+            });
+            
+            if (found) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
+      
+      // Filter functionality
+      const propertyFilter = document.getElementById('property-filter');
+      const statusFilter = document.getElementById('status-filter');
+      const dateFromFilter = document.getElementById('date-from');
+      const dateToFilter = document.getElementById('date-to');
+      const applyFilters = document.querySelector('.btn-filter');
+      const resetFilters = document.querySelector('.btn-reset');
+      
+      if (applyFilters) {
+        applyFilters.addEventListener('click', function() {
+          const propertyValue = propertyFilter ? propertyFilter.value.toLowerCase() : '';
+          const statusValue = statusFilter ? statusFilter.value.toLowerCase() : '';
+          const dateFromValue = dateFromFilter ? new Date(dateFromFilter.value) : null;
+          const dateToValue = dateToFilter ? new Date(dateToFilter.value) : null;
+          
+          const rows = document.querySelectorAll('.styled-table tbody tr');
+          
+          rows.forEach(row => {
+            const property = row.cells[1].textContent.toLowerCase();
+            const statusText = row.cells[5].textContent.toLowerCase();
+            const paymentDateText = row.cells[2].textContent.trim();
+            const dueDateText = row.cells[3].textContent.trim();
+            
+            // Parse dates
+            const paymentDate = paymentDateText !== '-' ? new Date(paymentDateText) : null;
+            const dueDate = new Date(dueDateText);
+            
+            // Apply filters
+            let propertyMatch = propertyValue === '' || property.includes(propertyValue);
+            let statusMatch = statusValue === '' || statusText.includes(statusValue);
+            
+            // Date range filter
+            let dateMatch = true;
+            if (dateFromValue && dateToValue) {
+              // If payment date exists, check it, otherwise check due date
+              const dateToCheck = paymentDate || dueDate;
+              dateMatch = dateToCheck >= dateFromValue && dateToCheck <= dateToValue;
+            } else if (dateFromValue) {
+              const dateToCheck = paymentDate || dueDate;
+              dateMatch = dateToCheck >= dateFromValue;
+            } else if (dateToValue) {
+              const dateToCheck = paymentDate || dueDate;
+              dateMatch = dateToCheck <= dateToValue;
+            }
+            
+            if (propertyMatch && statusMatch && dateMatch) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
+      
+      if (resetFilters) {
+        resetFilters.addEventListener('click', function() {
+          if (propertyFilter) propertyFilter.value = '';
+          if (statusFilter) statusFilter.value = '';
+          if (dateFromFilter) dateFromFilter.value = '';
+          if (dateToFilter) dateToFilter.value = '';
+          
+          // Reset display of all rows
+          const rows = document.querySelectorAll('.styled-table tbody tr');
+          rows.forEach(row => {
+            row.style.display = '';
+          });
+        });
+      }
+      
+      // Initialize Payment Chart
+      const ctx = document.createElement('canvas');
+      document.getElementById('payment-chart').innerHTML = '';
+      document.getElementById('payment-chart').appendChild(ctx);
+      
+      // Sample data for the chart
+      const paymentData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            label: 'Paid',
+            data: [15000, 22000, 18000, 24000, 20000, 15000],
+            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+            borderColor: 'rgba(16, 185, 129, 1)',
+            borderWidth: 2,
+            tension: 0.4
+          },
+          {
+            label: 'Pending',
+            data: [5000, 7000, 12000, 8000, 15000, 10000],
+            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+            borderColor: 'rgba(245, 158, 11, 1)',
+            borderWidth: 2,
+            tension: 0.4
+          },
+          {
+            label: 'Overdue',
+            data: [2000, 3000, 5000, 4000, 2000, 1000],
+            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+            borderColor: 'rgba(239, 68, 68, 1)',
+            borderWidth: 2,
+            tension: 0.4
+          }
+        ]
+      };
+      
+      const paymentChart = new Chart(ctx, {
+        type: 'line',
+        data: paymentData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += 'NPR ' + context.parsed.y.toLocaleString();
+                  }
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return 'NPR ' + value.toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Chart period filter
+      const chartPeriod = document.getElementById('chart-period');
+      if (chartPeriod) {
+        chartPeriod.addEventListener('change', function() {
+          const period = this.value;
+          
+          // Update chart data based on selected period
+          if (period === 'monthly') {
+            paymentChart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            paymentChart.data.datasets[0].data = [15000, 22000, 18000, 24000, 20000, 15000];
+            paymentChart.data.datasets[1].data = [5000, 7000, 12000, 8000, 15000, 10000];
+            paymentChart.data.datasets[2].data = [2000, 3000, 5000, 4000, 2000, 1000];
+          } else if (period === 'quarterly') {
+            paymentChart.data.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+            paymentChart.data.datasets[0].data = [55000, 58000, 63000, 60000];
+            paymentChart.data.datasets[1].data = [24000, 35000, 28000, 30000];
+            paymentChart.data.datasets[2].data = [10000, 7000, 5000, 8000];
+          } else if (period === 'yearly') {
+            paymentChart.data.labels = ['2021', '2022', '2023', '2024', '2025'];
+            paymentChart.data.datasets[0].data = [180000, 210000, 240000, 260000, 114000];
+            paymentChart.data.datasets[1].data = [65000, 75000, 85000, 90000, 57000];
+            paymentChart.data.datasets[2].data = [25000, 20000, 18000, 15000, 17000];
+          }
+          
+          paymentChart.update();
+        });
+      }
+      
+      // Receipt download simulation
+      const receiptButtons = document.querySelectorAll('.btn-receipt');
+      receiptButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const row = this.closest('tr');
+          const paymentId = row.cells[0].textContent;
+          const property = row.cells[1].textContent;
+          const amount = row.cells[4].textContent;
+          
+          alert(`Receipt for ${paymentId} (${property}) of ${amount} is being generated and will download shortly.`);
+        });
+      });
+      
+      // Payment process simulation
+      const payButtons = document.querySelectorAll('.btn-pay');
+      payButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const row = this.closest('tr');
+          const paymentId = row.cells[0].textContent;
+          const property = row.cells[1].textContent;
+          const amount = row.cells[4].textContent;
+          
+          if (confirm(`Process payment of ${amount} for ${property} (${paymentId})?`)) {
+            alert('Payment would be processed here. Redirecting to payment gateway.');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

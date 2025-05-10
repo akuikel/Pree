@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signed Lease Agreements</title>
+  {% load static %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-btn {
+      background-color: #6c757d;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    .styled-table thead tr {
+      background-color: #010101;
+      color: white;
+    }
+    .styled-table th,
+    .styled-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .styled-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+    .btn-action {
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-right: 5px;
+      color: white;
+    }
+    .btn-view {
+      background-color: #3b82f6;
+    }
+    .btn-id {
+      background-color: #10b981;
+    }
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      background-color: #10b981;
+      color: white;
+    }
+    .property-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .property-title {
+      font-weight: 500;
+      color: #1f2937;
+    }
+    .property-type {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.9);
+    }
+    .modal-content {
+      margin: 5% auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+      border-radius: 10px;
+      position: relative;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .id-images {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+    .id-image-wrapper {
+      text-align: center;
+    }
+    .id-image-wrapper h4 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .id-image-wrapper img {
+      max-width: 400px;
+      max-height: 300px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .no-id-text {
+      text-align: center;
+      color: #6c757d;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{% url 'dashboard' %}" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    
+    <h1><i class="fas fa-file-contract"></i> Signed Lease Agreements</h1>
+    
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Location</th>
+          <th>Monthly Rent</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Homeowner</th>
+          <th>Status</th>
+          <th>Signed On</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if signed_leases %}
+          {% for lease in signed_leases %}
+          <tr>
+            <td>
+              <div class="property-info">
+                <span class="property-title">{{ lease.rental_request.property.title }}</span>
+                <span class="property-type">{{ lease.rental_request.property.get_property_type_display }}</span>
+              </div>
+            </td>
+            <td>{{ lease.rental_request.property.location }}</td>
+            <td>NPR {{ lease.rental_request.property.price|floatformat:2 }}</td>
+            <td>{{ lease.rental_request.start_date|date:"M d, Y" }}</td>
+            <td>{{ lease.rental_request.end_date|date:"M d, Y"|default:"N/A" }}</td>
+            <td>
+              {{ lease.rental_request.property.homeowner.get_full_name|default:lease.rental_request.property.homeowner.email }}
+            </td>
+            <td>
+              <span class="status-badge">Signed</span>
+            </td>
+            <td>{{ lease.tenant_signed_at|date:"M d, Y" }}</td>
+            <td>
+              <a href="{% url 'view_rental_lease' lease.id %}" class="btn-action btn-view">
+                <i class="fas fa-eye"></i> View
+              </a>
+              {% if lease.tenant_id_front or lease.tenant_id_back %}
+              <button onclick="showIDModal({{ lease.id }})" class="btn-action btn-id">
+                <i class="fas fa-id-card"></i> View ID
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="9" class="no-data">
+              <i class="fas fa-info-circle"></i> You haven't signed any lease agreements yet.
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ID Modal -->
+  <div id="idModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 style="text-align: center; margin-bottom: 20px;">
+        <i class="fas fa-id-card"></i> Uploaded ID Documents
+      </h2>
+      <div id="idContentContainer">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden ID containers for each lease -->
+  {% for lease in signed_leases %}
+  <div id="idContent_{{ lease.id }}" style="display: none;">
+    {% if lease.tenant_id_front or lease.tenant_id_back %}
+      <div class="id-images">
+        {% if lease.tenant_id_front %}
+        <div class="id-image-wrapper">
+          <h4>ID Front</h4>
+          <img src="{{ lease.tenant_id_front.url }}" alt="ID Front">
+        </div>
+        {% endif %}
+        
+        {% if lease.tenant_id_back %}
+        <div class="id-image-wrapper">
+          <h4>ID Back</h4>
+          <img src="{{ lease.tenant_id_back.url }}" alt="ID Back">
+        </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <p class="no-id-text">No ID documents uploaded.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <script>
+    // Get the modal
+    var modal = document.getElementById("idModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    function showIDModal(leaseId) {
+      modal.style.display = "block";
+      var content = document.getElementById("idContent_" + leaseId).innerHTML;
+      document.getElementById("idContentContainer").innerHTML = content;
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

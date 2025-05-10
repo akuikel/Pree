@@ -1,0 +1,64 @@
+<!-- tenant_payment_history.html -->
+{% load static %}
+{% block content %}
+
+<div class="main-content">
+  <header class="header">
+    <div class="header-content">
+      <h1><i class="fas fa-receipt"></i> Payment History</h1>
+      <p class="date" id="currentDateTime">Loading...</p>
+    </div>
+  </header>
+
+  <section class="transaction-section">
+    <div class="section-header">
+      <h2><i class="fas fa-exchange-alt"></i> Your Transactions</h2>
+    </div>
+
+    <div class="table-container">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Property</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if payments %}
+            {% for payment in payments %}
+            <tr>
+              <td>#{{ payment.id }}</td>
+              <td>{{ payment.rental.property.title }}</td>
+              <td>{{ payment.date|date:"M d, Y" }}</td>
+              <td class="amount-cell inflow">+ NPR {{ payment.amount|floatformat:2 }}</td>
+              <td>
+                <span class="transaction-status completed">
+                  <i class="fas fa-check-circle"></i> Completed
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="5" class="no-data">No transactions found.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateElement = document.getElementById('currentDateTime');
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateElement.innerHTML = '<i class="fas fa-calendar-alt"></i> ' + now.toLocaleDateString('en-US', options);
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,832 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Property</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #010101;
+      --primary-hover: #050510;
+      --secondary-color: #6c757d;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #3b82f6;
+      --light-color: #e9eaec;
+      --dark-color: #1f2937;
+      --border-radius: 10px;
+      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      display: flex; /* Changed from grid to flex */
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 240px;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: all 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .logo-container span {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .menu ul, .report ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li, .report li {
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .menu li i, .report li i {
+      margin-right: 12px;
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .menu li:hover, .report li:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .menu li.active {
+      background-color: white;
+      color: var(--primary-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu li a, .report li a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .report {
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    .report h4 {
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      padding-left: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 1px;
+    }
+
+    .logout {
+      background-color: rgba(239, 68, 68, 0.2);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 30px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .logout:hover {
+      background-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .logout i {
+      margin-right: 10px;
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      margin-left: 280px; /* Match sidebar width + padding */
+      transition: all 0.3s ease;
+      width: calc(100% - 280px); /* Ensure content doesn't extend beyond viewport */
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      background-color: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
+
+    .header-content h1 {
+      font-size: 24px;
+      margin: 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-content h1 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    .date {
+      margin: 5px 0 0;
+      color: var(--secondary-color);
+      font-size: 14px;
+    }
+
+    .notification {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notification i {
+      font-size: 22px;
+      color: var(--secondary-color);
+      transition: all 0.3s ease;
+    }
+
+    .notification i:hover {
+      color: var(--primary-color);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--danger-color);
+      color: white;
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* Form Section Styling */
+    .form-section {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--box-shadow);
+    }
+
+    .form-container {
+      width: 100%;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* Multiple Image Upload Styles */
+    .image-upload-container {
+      margin-bottom: 20px;
+    }
+
+    .upload-area {
+      border: 2px dashed #ddd;
+      border-radius: var(--border-radius);
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: var(--light-color);
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(74, 108, 247, 0.05);
+    }
+
+    .upload-icon {
+      font-size: 36px;
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      font-size: 14px;
+      color: var(--secondary-color);
+    }
+
+    .upload-text span {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: var(--secondary-color);
+      margin-top: 5px;
+    }
+
+    .image-preview-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .image-preview {
+      position: relative;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: #f8f9fa;
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+
+    .image-preview-remove {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: var(--danger-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      opacity: 0.8;
+      transition: all 0.3s ease;
+    }
+
+    .image-preview-remove:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .image-preview-primary {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      background-color: var(--success-color);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: white;
+      color: var(--dark-color);
+      border: 1px solid #ddd;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--light-color);
+      border-color: #ccc;
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .message.success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .message.error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .message.info {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--info-color);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 70px;
+        padding: 20px 10px;
+      }
+
+      .main-content {
+        margin-left: 90px;
+        width: calc(100% - 90px);
+      }
+
+      .logo-container span, .menu li span, .report h4, .report li span, .logout span {
+        display: none;
+      }
+
+      .logo-container {
+        justify-content: center;
+      }
+
+      .menu li, .report li {
+        justify-content: center;
+        padding: 15px 10px;
+      }
+
+      .menu li i, .report li i {
+        margin-right: 0;
+        font-size: 20px;
+      }
+
+      .logout {
+        padding: 15px 0;
+      }
+
+      .logout i {
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Logo Section -->
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+          <li class="active"><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+          <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+          <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-file-signature"></i> <span>Pending Leases</span></a></li>
+  <li>
+    <a href="{% url 'tenant_signed_leases' %}" class="nav-link">
+      <i class="fas fa-file-contract"></i> Signed Leases
+    </a></li>
+        </ul>
+      </nav>
+      <div class="report">
+        <h4>Report</h4>
+        <ul>
+          <li><a href="{% url 'payment_details' %}"><i class="fas fa-file-alt"></i> <span>Payment Details</span></a></li>
+          <li><a href="{% url 'transactions' %}"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+          <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> <span>Report</span></a></li>
+        </ul>
+      </div>
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <h1><i class="fas fa-plus-circle"></i> Add New Property</h1>
+          <p class="date" id="currentDateTime"><i class="fas fa-calendar-alt"></i> Loading...</p>
+        </div>
+        <div class="notification">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">0</span>
+        </div>
+      </header>
+  
+      <!-- Add Property Form Section -->
+      <section class="form-section">
+        <div class="form-container">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+              <div class="message {% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}">
+                {{ message }}
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="title">Property Title</label>
+                <input type="text" id="title" name="title" required placeholder="Enter property title">
+              </div>
+              
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" required placeholder="Enter property location">
+              </div>
+              
+              <div class="form-group">
+                <label for="property_type">Property Type</label>
+                <select id="property_type" name="property_type" required>
+                  <option value="">Select property type</option>
+                  <option value="house">House</option>
+                  <option value="apartment">Apartment</option>
+                  <option value="villa">Villa</option>
+                  <option value="land">Land</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="price">Price (NPR)</label>
+                <input type="number" id="price" name="price" required min="0" step="0.01" placeholder="0.00">
+              </div>
+              
+              <div class="form-group">
+                <label for="bedrooms">Bedrooms</label>
+                <input type="number" id="bedrooms" name="bedrooms" min="0" placeholder="Number of bedrooms">
+              </div>
+              
+              <div class="form-group">
+                <label for="bathrooms">Bathrooms</label>
+                <input type="number" id="bathrooms" name="bathrooms" min="0" placeholder="Number of bathrooms">
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="5" placeholder="Describe your property"></textarea>
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="images">Property Images</label>
+                <div class="image-upload-container">
+                  <div class="upload-area" onclick="document.getElementById('images').click()">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p class="upload-text"><span>Click to upload</span> or drag and drop</p>
+                    <p class="upload-hint">Multiple images allowed. SVG, PNG, JPG or GIF (Max. 5MB each)</p>
+                    <input id="images" name="images" type="file" class="hidden" accept="image/*" multiple style="display: none;" />
+                  </div>
+                  <p class="upload-hint" style="margin-top: 10px">Maximum file size: 5MB per image. Recommended dimensions: 1200x800px</p>
+                  
+                  <div id="image-preview-container" class="image-preview-container">
+                    <!-- Preview images will be inserted here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Save Property
+              </button>
+              <a href="{% url 'property_list' %}" class="btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Set current date and time
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateElement = document.getElementById('currentDateTime');
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateElement.innerHTML = '<i class="fas fa-calendar-alt mr-2"></i> ' + now.toLocaleDateString('en-US', options);
+      
+      // Handle multiple image uploads with preview
+      const fileInput = document.getElementById('images');
+      const previewContainer = document.getElementById('image-preview-container');
+      const uploadArea = document.querySelector('.upload-area');
+      
+      let selectedFiles = [];
+      
+      fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+      });
+      
+      // Drag and drop functionality
+      uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.backgroundColor = 'rgba(74, 108, 247, 0.1)';
+        uploadArea.style.borderColor = 'var(--primary-color)';
+      });
+      
+      uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.backgroundColor = 'var(--light-color)';
+        uploadArea.style.borderColor = '#ddd';
+      });
+      
+      uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.style.backgroundColor = 'var(--light-color)';
+        uploadArea.style.borderColor = '#ddd';
+        
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+      });
+      
+      function handleFiles(files) {
+        Array.from(files).forEach(file => {
+          if (file.type.startsWith('image/')) {
+            if (file.size <= 5 * 1024 * 1024) { // 5MB limit
+              selectedFiles.push(file);
+              createPreview(file, selectedFiles.length - 1);
+            } else {
+              alert(`${file.name} is too large. Max file size is 5MB.`);
+            }
+          } else {
+            alert(`${file.name} is not an image file.`);
+          }
+        });
+        
+        updateFileInput();
+      }
+      
+      function createPreview(file, index) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          const previewDiv = document.createElement('div');
+          previewDiv.className = 'image-preview';
+          
+          previewDiv.innerHTML = `
+            <img src="${e.target.result}" alt="${file.name}">
+            <button type="button" class="image-preview-remove" onclick="removeImage(${index})">
+              <i class="fas fa-times"></i>
+            </button>
+            ${index === 0 ? '<span class="image-preview-primary">Primary</span>' : ''}
+          `;
+          
+          previewContainer.appendChild(previewDiv);
+        };
+        
+        reader.readAsDataURL(file);
+      }
+      
+      window.removeImage = function(index) {
+        selectedFiles.splice(index, 1);
+        updatePreviews();
+        updateFileInput();
+      };
+      
+      function updatePreviews() {
+        previewContainer.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+          createPreview(file, index);
+        });
+      }
+      
+      function updateFileInput() {
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => {
+          dataTransfer.items.add(file);
+        });
+        fileInput.files = dataTransfer.files;
+        
+        const uploadText = document.querySelector('.upload-text');
+        if (selectedFiles.length > 0) {
+          uploadText.innerHTML = `<span>${selectedFiles.length} image(s) selected</span>`;
+        } else {
+          uploadText.innerHTML = '<span>Click to upload</span> or drag and drop';
+        }
+      }
+      
+      // Toggle sidebar on mobile devices
+      const menuToggle = document.createElement('button');
+      menuToggle.classList.add('menu-toggle');
+      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+      menuToggle.style.position = 'fixed';
+      menuToggle.style.top = '20px';
+      menuToggle.style.left = '20px';
+      menuToggle.style.zIndex = '1001';
+      menuToggle.style.background = 'var(--primary-color)';
+      menuToggle.style.color = 'white';
+      menuToggle.style.border = 'none';
+      menuToggle.style.borderRadius = '5px';
+      menuToggle.style.padding = '8px 10px';
+      menuToggle.style.display = 'none';
+      document.body.appendChild(menuToggle);
+      
+      function handleResize() {
+        if (window.innerWidth <= 768) {
+          menuToggle.style.display = 'block';
+        } else {
+          menuToggle.style.display = 'none';
+        }
+      }
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      
+      menuToggle.addEventListener('click', function() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+      });
+    });
+  </script>
+</body>
+</html>
+{% endblock %}

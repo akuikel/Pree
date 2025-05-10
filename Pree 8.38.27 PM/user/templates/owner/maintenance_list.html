@@ -1,0 +1,398 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Maintenance Requests | PayTrack</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .main-content {
+      margin-left: 240px; /* same as sidebar width */
+      padding: 30px;
+      width: calc(100% - 240px);
+    }
+    
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .status-pending {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+    
+    .status-in-progress {
+      background-color: #E0F2FE;
+      color: #0369A1;
+    }
+    
+    .status-resolved {
+      background-color: #D1FAE5;
+      color: #065F46;
+    }
+    
+    .status-cancelled {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+    }
+    
+    .priority-badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .priority-low {
+      background-color: #ECFDF5;
+      color: #065F46;
+    }
+    
+    .priority-medium {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+    
+    .priority-high {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+    }
+    
+    .priority-urgent {
+      background-color: #7F1D1D;
+      color: white;
+    }
+    
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      min-width: 180px;
+      z-index: 10;
+      display: none;
+    }
+    
+    .dropdown-menu.active {
+      display: block;
+    }
+    
+    .dropdown-item {
+      display: block;
+      padding: 8px 15px;
+      color: #374151;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    
+    .dropdown-item:hover {
+      background-color: #F3F4F6;
+    }
+    
+    .dropdown-divider {
+      height: 1px;
+      background-color: #E5E7EB;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>My Properties</span></a></li>
+          <li class="active"><a href="{% url 'owner_maintenance_requests' %}"><i class="fas fa-tools"></i> <span>Maintenance</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+      <div class="report">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="#"><i class="fas fa-life-ring"></i> <span>Help & Support</span></a></li>
+        </ul>
+      </div>
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <h1 class="text-3xl font-semibold mb-1 text-blue-700 flex items-center gap-2">
+          <i class="fas fa-tools text-yellow-500"></i> Maintenance Requests
+        </h1>
+        <p class="text-gray-600">Manage maintenance requests for your properties</p>
+      </div>
+
+      <!-- Filter and Search Section -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label for="property" class="block text-sm font-medium text-gray-700 mb-1">Property</label>
+            <select name="property" id="property" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <option value="">All Properties</option>
+              {% for property in properties %}
+                <option value="{{ property.id }}" {% if selected_property == property.id %}selected{% endif %}>{{ property.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div>
+            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select name="status" id="status" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <option value="">All Statuses</option>
+              <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>In Progress</option>
+              <option value="resolved" {% if status == 'resolved' %}selected{% endif %}>Resolved</option>
+              <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <select name="priority" id="priority" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <option value="">All Priorities</option>
+              <option value="low" {% if priority == 'low' %}selected{% endif %}>Low</option>
+              <option value="medium" {% if priority == 'medium' %}selected{% endif %}>Medium</option>
+              <option value="high" {% if priority == 'high' %}selected{% endif %}>High</option>
+              <option value="urgent" {% if priority == 'urgent' %}selected{% endif %}>Urgent</option>
+            </select>
+          </div>
+          
+          <div class="flex items-end">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+              <i class="fas fa-filter mr-1"></i> Filter
+            </button>
+            <a href="{% url 'owner_maintenance_requests' %}" class="ml-2 text-gray-600 hover:text-gray-800 px-4 py-2">
+              <i class="fas fa-redo"></i>
+            </a>
+          </div>
+        </form>
+      </div>
+
+      {% if requests %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {% for request in requests %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+              <!-- Action Dropdown Button -->
+              <div class="absolute top-4 right-4">
+                <button type="button" class="request-dropdown-toggle text-gray-600 hover:text-gray-900" data-request-id="{{ request.id }}">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <!-- Dropdown Menu -->
+                <div class="dropdown-menu" id="dropdown-{{ request.id }}">
+                  <form method="post" action="{% url 'update_maintenance_status' request.id %}">
+                    {% csrf_token %}
+                    {% if request.status != 'in_progress' %}
+                      <button type="submit" name="status" value="in_progress" class="dropdown-item text-blue-600">
+                        <i class="fas fa-cog mr-2"></i> Mark as In Progress
+                      </button>
+                    {% endif %}
+                    
+                    {% if request.status != 'resolved' %}
+                      <button type="submit" name="status" value="resolved" class="dropdown-item text-green-600">
+                        <i class="fas fa-check-circle mr-2"></i> Mark as Resolved
+                      </button>
+                    {% endif %}
+                    
+                    {% if request.status != 'cancelled' %}
+                      <button type="submit" name="status" value="cancelled" class="dropdown-item text-red-600">
+                        <i class="fas fa-times-circle mr-2"></i> Cancel Request
+                      </button>
+                    {% endif %}
+                    
+                    <div class="dropdown-divider"></div>
+                    
+                    <a href="{% url 'maintenance_request_detail' request.id %}" class="dropdown-item">
+                      <i class="fas fa-eye mr-2"></i> View Details
+                    </a>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-lg font-semibold text-gray-800">{{ request.subject }}</h3>
+                  
+                  <div class="mr-8">
+                    {% if request.status == 'pending' %}
+                      <span class="status-badge status-pending">Pending</span>
+                    {% elif request.status == 'in_progress' %}
+                      <span class="status-badge status-in-progress">In Progress</span>
+                    {% elif request.status == 'resolved' %}
+                      <span class="status-badge status-resolved">Resolved</span>
+                    {% elif request.status == 'cancelled' %}
+                      <span class="status-badge status-cancelled">Cancelled</span>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="text-sm text-gray-600 mb-3">
+                  <p><i class="fas fa-home text-blue-500 mr-1"></i> <strong>Property:</strong> {{ request.rental.property.title }}</p>
+                  <p><i class="fas fa-user text-blue-500 mr-1"></i> <strong>Tenant:</strong> {{ request.rental.tenant.email }}</p>
+                  <p><i class="fas fa-calendar text-blue-500 mr-1"></i> <strong>Submitted:</strong> {{ request.request_date|date:"F d, Y H:i" }}</p>
+                  <p>
+                    <i class="fas fa-flag text-blue-500 mr-1"></i> <strong>Priority:</strong> 
+                    {% if request.priority == 'low' %}
+                      <span class="priority-badge priority-low">Low</span>
+                    {% elif request.priority == 'medium' %}
+                      <span class="priority-badge priority-medium">Medium</span>
+                    {% elif request.priority == 'high' %}
+                      <span class="priority-badge priority-high">High</span>
+                    {% elif request.priority == 'urgent' %}
+                      <span class="priority-badge priority-urgent">Urgent</span>
+                    {% endif %}
+                  </p>
+                </div>
+                
+                <div class="border-t border-gray-100 pt-3">
+                  <p class="text-gray-700 mb-3">{{ request.description|truncatechars:120 }}</p>
+                  
+                  {% if request.attachment %}
+                    <div class="mt-3">
+                      <p class="text-sm font-medium text-gray-600 mb-2">Attachment:</p>
+                      <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        {% if request.attachment.url|lower|slice:"-4:" == ".jpg" or request.attachment.url|lower|slice:"-4:" == ".png" or request.attachment.url|lower|slice:"-5:" == ".jpeg" or request.attachment.url|lower|slice:"-4:" == ".gif" %}
+                          <a href="{{ request.attachment.url }}" target="_blank" class="block">
+                            <img src="{{ request.attachment.url }}" alt="Attachment" class="max-h-56 object-cover rounded">
+                          </a>
+                        {% else %}
+                          <a href="{{ request.attachment.url }}" class="text-blue-600 hover:underline flex items-center">
+                            <i class="fas fa-file mr-1"></i> View attachment
+                          </a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if request.admin_notes and request.status == 'resolved' %}
+                    <div class="mt-4 p-3 bg-blue-50 rounded text-sm">
+                      <p class="font-medium text-gray-800 mb-1">Response notes:</p>
+                      <p class="text-gray-700">{{ request.admin_notes }}</p>
+                    </div>
+                  {% endif %}
+                  
+                  {% if request.status == 'resolved' and request.resolved_date %}
+                    <div class="mt-2 text-sm text-gray-500">
+                      <p><i class="fas fa-calendar-check mr-1"></i> Resolved on: {{ request.resolved_date|date:"F d, Y H:i" }}</p>
+                      {% if request.resolved_by %}
+                        <p><i class="fas fa-user-check mr-1"></i> Resolved by: {{ request.resolved_by }}</p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if requests.has_other_pages %}
+          <div class="flex justify-center mt-8">
+            <nav class="inline-flex rounded-md shadow-sm">
+              {% if requests.has_previous %}
+                <a href="?page={{ requests.previous_page_number }}{% if property %}&property={{ property }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if priority %}&priority={{ priority }}{% endif %}" class="px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">&laquo; Previous</a>
+              {% else %}
+                <span class="px-3 py-2 text-gray-500 bg-gray-100 border border-gray-300 rounded-l-md cursor-not-allowed">&laquo; Previous</span>
+              {% endif %}
+              
+              {% for i in requests.paginator.page_range %}
+                {% if requests.number == i %}
+                  <span class="px-3 py-2 text-white bg-blue-600 border border-blue-600">{{ i }}</span>
+                {% else %}
+                  <a href="?page={{ i }}{% if property %}&property={{ property }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if priority %}&priority={{ priority }}{% endif %}" class="px-3 py-2 text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">{{ i }}</a>
+                {% endif %}
+              {% endfor %}
+              
+              {% if requests.has_next %}
+                <a href="?page={{ requests.next_page_number }}{% if property %}&property={{ property }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if priority %}&priority={{ priority }}{% endif %}" class="px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">Next &raquo;</a>
+              {% else %}
+                <span class="px-3 py-2 text-gray-500 bg-gray-100 border border-gray-300 rounded-r-md cursor-not-allowed">Next &raquo;</span>
+              {% endif %}
+            </nav>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="bg-white rounded-lg shadow-md p-10 text-center">
+          <i class="fas fa-tools text-gray-300 text-5xl mb-4"></i>
+          <p class="text-gray-600 mb-5">No maintenance requests found for your properties.</p>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+  
+  <script>
+    // Toggle dropdown menus for maintenance requests
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleButtons = document.querySelectorAll('.request-dropdown-toggle');
+      
+      toggleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const requestId = this.getAttribute('data-request-id');
+          const dropdown = document.getElementById(`dropdown-${requestId}`);
+          
+          // Close all other dropdowns
+          document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            if (menu.id !== `dropdown-${requestId}`) {
+              menu.classList.remove('active');
+            }
+          });
+          
+          // Toggle the current dropdown
+          dropdown.classList.toggle('active');
+        });
+      });
+      
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.classList.remove('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html> 

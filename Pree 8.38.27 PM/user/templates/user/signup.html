@@ -1,0 +1,111 @@
+{% extends 'user/base.html' %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="mainContainer">
+    <div class="flex-container">
+        <!-- Left Column: Welcome Section -->
+        <div class="col-md-6 getstarted-col d-flex align-items-center">
+            
+        </div>
+
+        <!-- Right Column: Signup Form -->
+        <div class="col-md-6">
+            <div class="card">
+                <h2 class="text-center mb-4">Sign Up</h2>
+                <!-- General Form Errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                        <p class="error-feedback">{{ form.username.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <p class="error-feedback">{{ form.email.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password1">Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                        <p class="error-feedback">{{ form.password1.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password2">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                        <p class="error-feedback">{{ form.password2.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                        <p class="error-feedback">{{ form.phone_number.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                        <p class="error-feedback">{{ form.address.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company_name">Company Name</label>
+                        {{ form.company_name }}
+                        {% if form.company_name.errors %}
+                        <p class="error-feedback">{{ form.company_name.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_of_birth">Date of Birth</label>
+                        {{ form.date_of_birth }}
+                        {% if form.date_of_birth.errors %}
+                        <p class="error-feedback">{{ form.date_of_birth.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_type">User Type</label>
+                        {{ form.user_type }}
+                        {% if form.user_type.errors %}
+                        <p class="error-feedback">{{ form.user_type.errors|join:" " }}</p>
+                        {% endif %}
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                </form>
+
+                <p class="text-center mt-3">
+                    Already have an account? <a href="{% url 'login' %}">Login Here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

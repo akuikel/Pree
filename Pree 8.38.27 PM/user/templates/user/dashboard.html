@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Owner Dashboard</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #010101;
+      --primary-hover: #050510;
+      --secondary-color: #6c757d;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #3b82f6;
+      --light-color: #f3f4f6;
+      --dark-color: #1f2937;
+      --border-radius: 10px;
+      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      display: flex; /* Changed from grid to flex */
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 240px;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: all 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .logo-container span {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .menu ul, .report ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li, .report li {
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .menu li i, .report li i {
+      margin-right: 12px;
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .menu li:hover, .report li:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .menu li.active {
+      background-color: white;
+      color: var(--primary-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu li a, .report li a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .report {
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    .report h4 {
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      padding-left: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 1px;
+    }
+
+    .logout {
+      background-color: rgba(239, 68, 68, 0.2);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 30px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .logout:hover {
+      background-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .logout i {
+      margin-right: 10px;
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      margin-left: 280px; /* Match sidebar width + padding */
+      transition: all 0.3s ease;
+      width: calc(100% - 280px); /* Ensure content doesn't extend beyond viewport */
+    }
+
+    .toggle-sidebar {
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px;
+      cursor: pointer;
+      z-index: 110;
+    }
+
+    .toggle-sidebar i {
+      font-size: 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      background-color: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
+
+    .header-content h1 {
+      font-size: 24px;
+      margin: 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-content h1 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    .date {
+      margin: 5px 0 0;
+      color: var(--secondary-color);
+      font-size: 14px;
+    }
+
+    .search-notification {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      background-color: var(--light-color);
+      border-radius: 30px;
+      padding: 5px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 8px 10px;
+      font-family: 'Poppins', sans-serif;
+      width: 200px;
+    }
+
+    .search button {
+      background: var(--primary-color);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .search button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .notification {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notification i {
+      font-size: 22px;
+      color: var(--secondary-color);
+      transition: all 0.3s ease;
+    }
+
+    .notification i:hover {
+      color: var(--primary-color);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--danger-color);
+      color: white;
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* Add Property Button */
+    .add-property-section {
+      margin-bottom: 25px;
+    }
+
+    .add-property-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 500;
+      box-shadow: 0 4px 10px rgba(74, 108, 247, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .add-property-btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(74, 108, 247, 0.4);
+    }
+
+    /* Cards Styling */
+    .cards-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      box-shadow: var(--box-shadow);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.1), 0 8px 10px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Animation for cards */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeInUp 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    .card h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin-top: 0;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2 i {
+      color: var(--primary-color);
+      font-size: 18px;
+    }
+
+    .amount {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 10px;
+      color: var(--dark-color);
+    }
+
+    .change {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .change.red {
+      color: var(--danger-color);
+    }
+
+    .change.green {
+      color: var(--success-color);
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 13px;
+      color: var(--secondary-color);
+    }
+
+    .subtext {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .property-stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+    }
+
+    .property-stats span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .property-stats i {
+      font-size: 16px;
+    }
+
+    .view-all {
+      display: inline-block;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .view-all:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* Properties Section */
+    .my-properties-section, .status-section, .chart-section {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--box-shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header h2 i {
+      color: var(--primary-color);
+    }
+
+    .view-all-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .view-all-link:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    .properties-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .property-card {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .property-image {
+      position: relative;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .property-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .property-card:hover .property-image img {
+      transform: scale(1.05);
+    }
+
+    .property-type {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .property-details {
+      padding: 20px;
+    }
+
+    .property-details h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+
+    .location {
+      color: var(--secondary-color);
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .property-features {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: var(--secondary-color);
+      font-size: 14px;
+    }
+
+    .property-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .edit-btn, .delete-btn {
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .edit-btn {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .delete-btn {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #dc2626;
+    }
+
+    .no-properties {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--secondary-color);
+    }
+
+    .add-property-link {
+      display: inline-block;
+      margin-top: 15px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    {#.add-property-link:hover {#}
+    {#  background-color: var(--primary-hover);#}
+    {#}#}
+
+    /* Table Styling */
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--border-radius);
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .styled-table thead tr {
+      background-color: var(--primary-color);
+      color: white;
+      text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 15px;
+      border-bottom: 1px solid #f2f2f2;
+    }
+
+    .styled-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .styled-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+    }
+
+    .status.green {
+      color: var(--success-color);
+    }
+
+    .status.blue {
+      color: var(--info-color);
+    }
+
+    .status.red {
+      color: var(--danger-color);
+    }
+
+    .btn-details {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-details:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 20px;
+      color: var(--secondary-color);
+      font-style: italic;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      padding-bottom: 30px;
+    }
+
+    #earningChart {
+      height: 300px;
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 70px;
+        padding: 20px 10px;
+      }
+
+      .main-content {
+        margin-left: 90px;
+        width: calc(100% - 90px);
+      }
+
+      .logo-container span, .menu li span, .report h4, .report li span, .logout span {
+        display: none;
+      }
+
+      .logo-container {
+        justify-content: center;
+      }
+
+      .menu li, .report li {
+        justify-content: center;
+        padding: 15px 10px;
+      }
+
+      .menu li i, .report li i {
+        margin-right: 0;
+        font-size: 20px;
+      }
+
+      .logout {
+        padding: 15px 0;
+      }
+
+      .logout i {
+        margin-right: 0;
+      }
+      
+      .toggle-sidebar {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+      
+      .toggle-sidebar {
+        left: 20px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding-top: 50px; /* Space for the toggle button */
+      }
+
+      .search-notification {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .search input {
+        width: 150px;
+      }
+
+      .cards-section {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .properties-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search {
+        display: none;
+      }
+      
+      .header {
+        padding: 15px;
+        padding-top: 50px;
+      }
+      
+      .toggle-sidebar {
+        top: 15px;
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Toggle Sidebar Button for Mobile -->
+    <button class="toggle-sidebar">
+      <i class="fas fa-bars"></i>
+    </button>
+  
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Logo Section -->
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li>
+            <a href="{% url 'homeowner_payment_history' %}">
+              <i class="fas fa-wallet"></i> 
+              <span>Payment History</span>
+            </a>
+          </li>
+          <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+<li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
+
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+      <!-- <div class="report">
+        <h4>Report</h4>
+        <ul>
+          <li><a href="{% url 'payment_details' %}"><i class="fas fa-file-alt"></i> <span>Payment Details</span></a></li>
+          <li><a href="{% url 'transactions' %}"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+          <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> <span>Report</span></a></li>
+          <li><a href="#"><i class="fas fa-chart-line"></i> <span>Maintainence Request Form</span></a></li>
+
+
+        </ul>
+      </div> -->
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <h1><i class="fas fa-chart-pie"></i> Welcome, {{ request.user.username }}</h1>
+          <p class="date" id="currentDateTime"><i class="fas fa-calendar-alt"></i> Loading...</p>
+        </div>
+        <div class="search-notification">
+          <div class="search">
+            <input type="text" placeholder="Search here">
+            <button><i class="fas fa-search"></i> Search</button>
+          </div>
+          <div class="notification">
+            <i class="fas fa-bell"></i>
+            {% if notification_count > 0 %}
+            <span class="notification-badge">{{ notification_count }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+      <!-- Add New Property Button -->
+      <section class="add-property-section">
+        <a href="{% url 'add_property' %}" class="add-property-btn">
+          <i class="fas fa-plus-circle"></i> Add New Property
+        </a>
+      </section>
+
+      <!-- Cards Section -->
+      <section class="cards-section">
+        <!-- Income Card -->
+        <div class="card income-card">
+          <h2><i class="fas fa-wallet"></i> Income</h2>
+          <p class="amount">NPR {{ total_income|floatformat:2 }}</p>
+          <p class="change {% if income_change < 0 %}red{% else %}green{% endif %}">
+            <i class="fas fa-arrow-{% if income_change < 0 %}down{% else %}up{% endif %}"></i> 
+            {{ income_change|floatformat:1 }}% 
+            {% if income_change < 0 %}↓{% else %}↑{% endif %}
+          </p>
+          <p>Compared to NPR {{ yesterday_income|floatformat:2 }} yesterday</p>
+          <p class="subtext">Last week Income: NPR {{ last_week_income|floatformat:2 }}</p>
+        </div>
+
+        <!-- Expenses Card -->
+        <div class="card expenses-card">
+          <h2><i class="fas fa-money-bill-wave"></i> Expenses</h2>
+          <p class="amount">NPR {{ total_expenses|floatformat:2 }}</p>
+          <p class="change {% if expenses_change > 0 %}red{% else %}green{% endif %}">
+            <i class="fas fa-arrow-{% if expenses_change > 0 %}up{% else %}down{% endif %}"></i> 
+            {{ expenses_change|floatformat:1 }}% 
+            {% if expenses_change > 0 %}↑{% else %}↓{% endif %}
+          </p>
+          <p>Compared to NPR {{ yesterday_expenses|floatformat:2 }} yesterday</p>
+          <p class="subtext">Last week Expenses: NPR {{ last_week_expenses|floatformat:2 }}</p>
+        </div>
+
+        <!-- Properties Overview Card -->
+        <div class="card properties-card">
+          <h2><i class="fas fa-home"></i> My Properties</h2>
+          <p class="amount">{{ property_count }}</p>
+          <div class="property-stats">
+            <span><i class="fas fa-check-circle"></i> {{ rented_count }} Rented</span>
+            <span><i class="fas fa-home"></i> {{ available_count }} Available</span>
+          </div>
+          <a href="{% url 'property_list' %}" class="view-all">View All Properties</a>
+        </div>
+      </section>
+
+      <!-- My Properties Section -->
+      <section class="my-properties-section">
+        <div class="section-header">
+          <h2><i class="fas fa-building"></i> My Properties</h2>
+          <a href="{% url 'property_list' %}" class="view-all-link">View All</a>
+        </div>
+        
+        <div class="properties-grid">
+          {% if properties %}
+            {% for property in properties|slice:":3" %}
+              <div class="property-card">
+                <div class="property-image">
+                  <img src="{{ property.image.url }}" alt="{{ property.title }}">
+                  <span class="property-type">{{ property.get_property_type_display }}</span>
+                </div>
+                <div class="property-details">
+                  <h3>{{ property.title }}</h3>
+                  <p class="location"><i class="fas fa-map-marker-alt"></i> {{ property.location }}</p>
+                  <p class="price">NPR {{ property.price|floatformat:2 }}</p>
+                  <div class="property-features">
+                    <span><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</span>
+                    <span><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</span>
+                  </div>
+                  <div class="property-actions">
+                    <a href="{% url 'edit_property' property.id %}" class="edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="{% url 'delete_property' property.id %}" class="delete-btn"><i class="fas fa-trash"></i> Delete</a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="no-properties">
+              <p>You haven't added any properties yet.</p>
+              <a href="{% url 'add_property' %}" class="add-property-link">Add Your First Property</a>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+
+       <!-- Live Booking Status -->
+       <section class="status-section">
+        <h2><i class="fas fa-calendar-check"></i> Recent Bookings</h2>
+        <div class="table-container">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Property</th>
+                <th>Client</th>
+                <th>Status</th>
+                <th>Earning</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if bookings %}
+                {% for booking in bookings %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ booking.property.title }}</td>
+                  <td>{{ booking.tenant.username }}</td>
+                  <td class="status {% if booking.status == 'completed' %}green{% elif booking.status == 'pending' %}blue{% elif booking.status == 'cancelled' %}red{% endif %}">
+                    <i class="fas fa-{% if booking.status == 'completed' %}check-circle{% elif booking.status == 'pending' %}clock{% elif booking.status == 'cancelled' %}times-circle{% endif %}"></i> 
+                    {{ booking.get_status_display }}
+                  </td>
+                  <td>NPR {{ booking.amount|floatformat:2 }}</td>
+                  <td>
+                    <a href="#" class="btn-details"><i class="fas fa-info-circle"></i> Details</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="6" class="no-data">No bookings found</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Chart Section -->
+      <section class="chart-section">
+        <h2><i class="fas fa-chart-line"></i> Earning Summary</h2>
+        <canvas id="earningChart"></canvas>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Set current date and time
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateElement = document.getElementById('currentDateTime');
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateElement.innerHTML = '<i class="fas fa-calendar-alt"></i> ' + now.toLocaleDateString('en-US', options);
+      
+      // Chart data from context
+      const ctx = document.getElementById('earningChart').getContext('2d');
+      
+      // This would be populated by your Django view
+      const monthlyData = {{ monthly_earnings_data|safe }};
+      
+      // Chart configurations with improved styling
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: monthlyData.map(item => item.month),
+          datasets: [{
+            label: 'Monthly Earnings (NPR)',
+            data: monthlyData.map(item => item.amount),
+            backgroundColor: 'rgba(74, 108, 247, 0.1)',
+            borderColor: 'rgba(74, 108, 247, 1)',
+            borderWidth: 3,
+            tension: 0.4,
+            pointBackgroundColor: 'rgba(74, 108, 247, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return 'NPR ' + value.toLocaleString();
+                },
+                font: {
+                  family: 'Poppins'
+                }
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  family: 'Poppins'
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                boxWidth: 12,
+                font: {
+                  family: 'Poppins',
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleFont: {
+                family: 'Poppins',
+                size: 13
+              },
+              bodyFont: {
+                family: 'Poppins',
+                size: 12
+              },
+              padding: 10,
+              cornerRadius: 5,
+              callbacks: {
+                label: function(context) {
+                  return 'NPR ' + context.parsed.y.toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Toggle sidebar on mobile
+      const toggleBtn = document.querySelector('.toggle-sidebar');
+      const sidebar = document.querySelector('.sidebar');
+      const mainContent = document.querySelector('.main-content');
+      
+      toggleBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        
+        // Check if sidebar is active and adjust main content
+        if (sidebar.classList.contains('active')) {
+          if (window.innerWidth <= 768) {
+            mainContent.style.marginLeft = '0';
+          }
+        } else {
+          if (window.innerWidth <= 768) {
+            mainContent.style.marginLeft = '0';
+          }
+        }
+      });
+      
+      // Responsive adjustments
+      function handleResize() {
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove('active');
+          mainContent.style.marginLeft = '0';
+          mainContent.style.width = '100%';
+        } else if (window.innerWidth <= 1024) {
+          mainContent.style.marginLeft = '90px';
+          mainContent.style.width = 'calc(100% - 90px)';
+        } else {
+          mainContent.style.marginLeft = '280px';
+          mainContent.style.width = 'calc(100% - 280px)';
+        }
+      }
+      
+      window.addEventListener('resize', handleResize);
+      handleResize(); // Run on page load
+      
+      // Notification dropdown
+      const notificationBtn = document.querySelector('.notification');
+      notificationBtn.addEventListener('click', function() {
+        // Show notification dropdown (to be implemented)
+        alert('Notifications feature coming soon!');
+      });
+      
+      // Add subtle animations to cards
+      document.querySelectorAll('.card').forEach((card, index) => {
+        card.style.animationDelay = (index * 0.1) + 's';
+        card.classList.add('animate-in');
+      });
+      
+      // Fix table overflow
+      const tables = document.querySelectorAll('.table-container');
+      tables.forEach(table => {
+        table.addEventListener('scroll', function() {
+          if (this.scrollLeft > 0) {
+            this.classList.add('scrolling');
+          } else {
+            this.classList.remove('scrolling');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

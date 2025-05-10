@@ -1,0 +1,353 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit Maintenance Request | PayTrack</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .main-content {
+      margin-left: 240px; /* same as sidebar width */
+      padding: 30px;
+      width: calc(100% - 240px);
+    }
+
+    .form-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .form-box h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-box p {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .submit-btn {
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .submit-btn:hover {
+      background-color: #1e3a8a;
+    }
+    
+    .file-upload-container {
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .file-upload-container:hover {
+      border-color: #2563eb;
+    }
+    
+    .file-upload-container.has-file {
+      border-style: solid;
+      border-color: #2563eb;
+    }
+    
+    .file-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .file-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin-top: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .file-name {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #4b5563;
+      word-break: break-all;
+      display: none;
+    }
+    
+    .remove-file {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      cursor: pointer;
+      display: none;
+    }
+    
+    /* Property info card */
+    .property-info {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2563eb;
+    }
+    
+    .property-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 8px;
+    }
+    
+    .property-info p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+          <li class="active"><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+          <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+          <li><a href="{% url 'view_maintenance_requests' %}"><i class="fas fa-tools"></i> <span>Maintenance</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'" type="button">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="form-box">
+        <h2><i class="fas fa-tools text-yellow-500"></i> Submit Maintenance Request</h2>
+        <p>Please describe the issue clearly. Our support team will follow up promptly.</p>
+        
+        <!-- Property information -->
+        <div class="property-info">
+          <h3><i class="fas fa-home text-blue-700 mr-1"></i> {{ rental.property.title }}</h3>
+          <p><i class="fas fa-map-marker-alt text-gray-500 mr-1"></i> {{ rental.property.location }}</p>
+          <p><i class="fas fa-user text-gray-500 mr-1"></i> Owned by: {{ rental.property.homeowner.get_full_name|default:rental.property.homeowner.email }}</p>
+        </div>
+
+        {% if messages %}
+          <div class="mb-6">
+            {% for message in messages %}
+              <div class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} p-3 rounded mb-3">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" id="maintenance-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_subject">Subject <span class="text-red-500">*</span></label>
+            {{ form.subject }}
+            {% if form.subject.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.subject.errors|join:" " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_description">Description <span class="text-red-500">*</span></label>
+            {{ form.description }}
+            {% if form.description.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.description.errors|join:" " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_priority">Priority</label>
+            {{ form.priority }}
+            {% if form.priority.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.priority.errors|join:" " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_attachment">Attach Image (Optional)</label>
+            <div class="file-upload-container" id="file-upload-container">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                <p class="text-sm text-gray-500 mt-2" id="upload-text">Drag and drop an image or click to browse</p>
+              </div>
+              {{ form.attachment }}
+              <img src="#" alt="Image preview" class="file-preview" id="image-preview">
+              <p class="file-name" id="file-name"></p>
+              <button type="button" class="remove-file" id="remove-file">×</button>
+            </div>
+            {% if form.attachment.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.attachment.errors|join:" " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="flex justify-between items-center mt-8">
+            <a href="{% url 'my_rentals' %}" class="text-gray-600 hover:text-gray-800">
+              <i class="fas fa-arrow-left mr-1"></i> Back to My Rentals
+            </a>
+            <button type="submit" class="submit-btn">
+              <i class="fas fa-paper-plane"></i> Submit Request
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById('id_attachment');
+      const fileContainer = document.getElementById('file-upload-container');
+      const imagePreview = document.getElementById('image-preview');
+      const fileName = document.getElementById('file-name');
+      const removeButton = document.getElementById('remove-file');
+      const uploadText = document.getElementById('upload-text');
+      
+      fileInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const fileType = file.type.split('/')[0];
+            
+            if (fileType === 'image') {
+              imagePreview.src = e.target.result;
+              imagePreview.style.display = 'block';
+            } else {
+              imagePreview.style.display = 'none';
+            }
+            
+            fileName.textContent = file.name;
+            fileName.style.display = 'block';
+            removeButton.style.display = 'flex';
+            uploadText.textContent = 'Change image';
+            fileContainer.classList.add('has-file');
+          };
+          
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      removeButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        fileInput.value = '';
+        imagePreview.src = '#';
+        imagePreview.style.display = 'none';
+        fileName.textContent = '';
+        fileName.style.display = 'none';
+        removeButton.style.display = 'none';
+        uploadText.textContent = 'Drag and drop an image or click to browse';
+        fileContainer.classList.remove('has-file');
+      });
+    });
+  </script>
+</body>
+</html>

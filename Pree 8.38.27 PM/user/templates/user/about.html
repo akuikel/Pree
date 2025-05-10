@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-lg py-4">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-extrabold text-blue-600">
+                <a href="{% url 'landing_page' %}">PayTrack</a>
+            </h1>
+            <!-- Navigation -->
+        <nav class="hidden md:flex space-x-8">
+            <a href="{% url 'about_page' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">About</a>
+            <a href="{% url 'service_page' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">Services</a>
+            <a href="{% url 'properties_list' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">Properties</a>
+            <a href="#team" class="text-gray-700 hover:text-blue-600 font-medium transition">Team</a>
+            <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition">Contact</a>
+        </nav>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="bg-blue-50 py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-extrabold text-gray-900 text-center">About Us</h2>
+            <p class="text-lg text-gray-600 text-center mt-4 max-w-3xl mx-auto">At <span class="text-blue-600 font-semibold">payTrack</span>, we are committed to making property management seamless and efficient for landlords and tenants alike.</p>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-3xl font-semibold text-gray-900">Our Mission</h3>
+                    <p class="text-gray-700 mt-4">We aim to revolutionize the real estate industry by offering innovative, user-friendly solutions that bridge the gap between landlords and tenants. From rent management to property maintenance, we provide comprehensive services that cater to every need.</p>
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-start space-x-3">
+                            <span class="text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </span>
+                            <span>Efficient property management</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <span class="text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </span>
+                            <span>Transparent and secure services</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <span class="text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </span>
+                            <span>Exceptional customer support</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <img src="https://via.placeholder.com/600x400" alt="About us" class="rounded-lg shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="bg-white py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-5xl font-extrabold text-gray-900 text-center">Meet Our Team</h2>
+            <p class="text-lg text-gray-600 text-center mt-4 max-w-3xl mx-auto">Our dedicated team of professionals is here to help you with all your property management needs.</p>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="bg-blue-50 p-6 rounded-lg shadow-lg text-center">
+                    <img src="https://via.placeholder.com/150" alt="Team Member" class="w-24 h-24 mx-auto rounded-full">
+                    <h3 class="text-2xl font-bold text-gray-800 mt-4">John Doe</h3>
+                    <p class="text-gray-600 mt-2">Founder & CEO</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-lg shadow-lg text-center">
+                    <img src="https://via.placeholder.com/150" alt="Team Member" class="w-24 h-24 mx-auto rounded-full">
+                    <h3 class="text-2xl font-bold text-gray-800 mt-4">Jane Smith</h3>
+                    <p class="text-gray-600 mt-2">Head of Operations</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-lg shadow-lg text-center">
+                    <img src="https://via.placeholder.com/150" alt="Team Member" class="w-24 h-24 mx-auto rounded-full">
+                    <h3 class="text-2xl font-bold text-gray-800 mt-4">Emily Johnson</h3>
+                    <p class="text-gray-600 mt-2">Customer Success Manager</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 payTrack. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Maintenance Requests | PayTrack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .main-content {
+      margin-left: 240px; /* same as sidebar width */
+      padding: 30px;
+      width: calc(100% - 240px);
+    }
+    
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .status-pending {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+    
+    .status-in-progress {
+      background-color: #E0F2FE;
+      color: #0369A1;
+    }
+    
+    .status-resolved {
+      background-color: #D1FAE5;
+      color: #065F46;
+    }
+    
+    .status-cancelled {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+    }
+    
+    .priority-badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .priority-low {
+      background-color: #ECFDF5;
+      color: #065F46;
+    }
+    
+    .priority-medium {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+    
+    .priority-high {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+    }
+    
+    .priority-urgent {
+      background-color: #7F1D1D;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+          <li class="active"><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+          <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+          <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-file-signature"></i> <span>Pending Leases</span></a></li>
+          <li>
+            <a href="{% url 'tenant_signed_leases' %}" class="nav-link">
+              <i class="fas fa-file-contract"></i> Signed Leases
+            </a></li>
+        </ul>
+      </nav>
+
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <h1 class="text-3xl font-semibold mb-1 text-blue-700 flex items-center gap-2">
+          <i class="fas fa-tools text-yellow-500"></i> My Maintenance Requests
+        </h1>
+        <p class="text-gray-600">Track the status of your property maintenance requests</p>
+      </div>
+
+      {% if requests %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% for request in requests %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-lg font-semibold text-gray-800">{{ request.subject }}</h3>
+                  
+                  <div>
+                    {% if request.status == 'pending' %}
+                      <span class="status-badge status-pending">Pending</span>
+                    {% elif request.status == 'in_progress' %}
+                      <span class="status-badge status-in-progress">In Progress</span>
+                    {% elif request.status == 'resolved' %}
+                      <span class="status-badge status-resolved">Resolved</span>
+                    {% elif request.status == 'cancelled' %}
+                      <span class="status-badge status-cancelled">Cancelled</span>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="text-sm text-gray-600 mb-3">
+                  <p><i class="fas fa-home text-blue-500 mr-1"></i> <strong>Property:</strong> {{ request.rental.property.title }}</p>
+                  <p><i class="fas fa-calendar text-blue-500 mr-1"></i> <strong>Submitted:</strong> {{ request.request_date|date:"F d, Y H:i" }}</p>
+                  <p>
+                    <i class="fas fa-flag text-blue-500 mr-1"></i> <strong>Priority:</strong> 
+                    {% if request.priority == 'low' %}
+                      <span class="priority-badge priority-low">Low</span>
+                    {% elif request.priority == 'medium' %}
+                      <span class="priority-badge priority-medium">Medium</span>
+                    {% elif request.priority == 'high' %}
+                      <span class="priority-badge priority-high">High</span>
+                    {% elif request.priority == 'urgent' %}
+                      <span class="priority-badge priority-urgent">Urgent</span>
+                    {% endif %}
+                  </p>
+                </div>
+                
+                <div class="border-t border-gray-100 pt-3">
+                  <p class="text-gray-700 mb-3">{{ request.description }}</p>
+                  
+                  {% if request.attachment %}
+                    <div class="mt-3">
+                      <p class="text-sm font-medium text-gray-600 mb-2">Attachment:</p>
+                      <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        {% if request.attachment.url|lower|slice:"-4:" == ".jpg" or request.attachment.url|lower|slice:"-4:" == ".png" or request.attachment.url|lower|slice:"-5:" == ".jpeg" or request.attachment.url|lower|slice:"-4:" == ".gif" %}
+                          <a href="{{ request.attachment.url }}" target="_blank" class="block">
+                            <img src="{{ request.attachment.url }}" alt="Attachment" class="max-h-56 object-cover rounded">
+                          </a>
+                          <a href="{{ request.attachment.url }}" download class="text-sm text-blue-600 hover:underline flex items-center mt-2">
+                            <i class="fas fa-download mr-1"></i> Download image
+                          </a>
+                        {% else %}
+                          <a href="{{ request.attachment.url }}" class="text-blue-600 hover:underline flex items-center">
+                            <i class="fas fa-file mr-1"></i> View attachment
+                          </a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if request.admin_notes and request.status == 'resolved' %}
+                    <div class="mt-4 p-3 bg-blue-50 rounded text-sm">
+                      <p class="font-medium text-gray-800 mb-1">Response from management:</p>
+                      <p class="text-gray-700">{{ request.admin_notes }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="bg-white rounded-lg shadow-md p-10 text-center">
+          <i class="fas fa-tools text-gray-300 text-5xl mb-4"></i>
+          <p class="text-gray-600 mb-5">You don't have any maintenance requests yet.</p>
+          <a href="{% url 'my_rentals' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <i class="fas fa-home mr-2"></i> Go to My Rentals
+          </a>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>

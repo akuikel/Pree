@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Verify OTP{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-4 text-gray-800">Verify OTP</h2>
+        <p class="text-center text-gray-600 mb-6">An OTP has been sent to your email. Please enter it below to complete the signup process.</p>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ request.session.signup_data.email }}">
+            <div class="flex flex-col">
+                <label for="otp" class="mb-2 text-sm font-medium text-gray-700">Enter OTP</label>
+                <input type="text" name="otp" id="otp" class="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter OTP" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition duration-300">Verify OTP</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
