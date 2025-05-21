@@ -56,21 +56,19 @@ class Property(models.Model):
     def __str__(self):
         return self.title
     
+    @property
     def get_primary_image(self):
-    # First try to get primary image from PropertyImage model
+        # First try to get primary image from PropertyImage model
         primary_image = self.images.filter(is_primary=True).first()
         if primary_image:
             return primary_image.image
-    
-    # If no primary image, try to get the first image from PropertyImage
+        # If no primary image, try to get the first image from PropertyImage
         first_image = self.images.first()
         if first_image:
             return first_image.image
-    
-    # If no PropertyImage exists, fall back to the old image field
+        # If no PropertyImage exists, fall back to the old image field
         if self.image and self.image.name != 'default_property.jpg':
-             return self.image
-    
+            return self.image
         return None
 
 

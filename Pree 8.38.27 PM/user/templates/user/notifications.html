@@ -4,687 +4,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notifications</title>
+  <title>Notifications | PayTrack</title>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-   :root {
-      --primary-color: #010101;
-      --primary-hover: #050510;
-      --secondary-color: #6c757d;
-      --success-color: #10b981;
-      --danger-color: #ef4444;
-      --warning-color: #f59e0b;
-      --info-color: #3b82f6;
-      --light-color: #f3f4f6;
-      --dark-color: #1f2937;
-      --border-radius: 10px;
-      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f5f7fa;
+    body,
+    html {
       margin: 0;
       padding: 0;
-      color: #333;
-      overflow-x: hidden;
     }
 
     .dashboard-container {
       display: flex;
+      width: 100%;
       min-height: 100vh;
-      position: relative;
     }
 
-    /* Sidebar Styling */
     .sidebar {
-      background: linear-gradient(135deg, #040404 0%, #000000 100%);
-      color: white;
-      padding: 20px;
-      position: fixed;
       width: 240px;
-      height: 100vh;
-      overflow-y: auto;
-      z-index: 100;
-      transition: all 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 15px 0;
-      margin-bottom: 30px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      object-fit: contain;
-    }
-
-    .logo-container span {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .menu ul, .report ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .menu li, .report li {
-      margin-bottom: 10px;
-      padding: 10px 15px;
-      border-radius: var(--border-radius);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .menu li i, .report li i {
-      margin-right: 12px;
-      font-size: 18px;
-      width: 20px;
-      text-align: center;
-    }
-
-    .menu li:hover, .report li:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .menu li.active {
-      background-color: white;
-      color: var(--primary-color);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .menu li a, .report li a {
-      color: inherit;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      width: 100%;
-    }
-
-    .report {
-      margin-top: 30px;
-      margin-bottom: 20px;
-    }
-
-    .report h4 {
-      font-size: 14px;
-      text-transform: uppercase;
-      margin-bottom: 15px;
-      padding-left: 15px;
-      color: rgba(255, 255, 255, 0.7);
-      letter-spacing: 1px;
-    }
-
-    .logout {
-      background-color: rgba(239, 68, 68, 0.2);
-      border: none;
-      color: white;
-      padding: 12px 20px;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      margin-top: 30px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .logout:hover {
-      background-color: rgba(239, 68, 68, 0.4);
-    }
-
-    .logout i {
-      margin-right: 10px;
-    }
-
-    /* Main Content Styling */
-    .main-content {
-      flex: 1;
-      padding: 30px;
-      margin-left: 280px;
-      transition: all 0.3s ease;
-      width: calc(100% - 280px);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      background-color: white;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
       padding: 20px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-    }
-
-    .header-content h1 {
-      font-size: 24px;
-      margin: 0;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-    }
-
-    .header-content h1 i {
-      margin-right: 10px;
-      color: var(--primary-color);
-    }
-
-    .date {
-      margin: 5px 0 0;
-      color: var(--secondary-color);
-      font-size: 14px;
-    }
-
-    .search-notification {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .search {
-      display: flex;
-      align-items: center;
-      background-color: var(--light-color);
-      border-radius: 30px;
-      padding: 5px 15px;
-      transition: all 0.3s ease;
-    }
-
-    .search input {
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 8px 10px;
-      font-family: 'Poppins', sans-serif;
-      width: 200px;
-    }
-
-    .search button {
-      background: var(--primary-color);
-      border: none;
       color: white;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .search button:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .notification {
-      position: relative;
-      cursor: pointer;
-    }
-
-    .notification i {
-      font-size: 22px;
-      color: var(--secondary-color);
-      transition: all 0.3s ease;
-    }
-
-    .notification i:hover {
-      color: var(--primary-color);
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background-color: var(--danger-color);
-      color: white;
-      font-size: 10px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-
-    /* Notification Section Styling */
-    .notification-section {
-      background-color: white;
-      border-radius: var(--border-radius);
-      padding: 25px;
-      margin-bottom: 30px;
-      box-shadow: var(--box-shadow);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .section-header h2 {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-header h2 i {
-      color: var(--primary-color);
-    }
-
-    .action-btn {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: var(--border-radius);
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-
-    .action-btn:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-2px);
-    }
-
-    .filters {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .filter-group label {
-      font-size: 12px;
-      color: var(--secondary-color);
-      margin-bottom: 5px;
-    }
-
-    .filter-group select, .filter-group input {
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      font-family: 'Poppins', sans-serif;
-      font-size: 14px;
-    }
-
-    .filter-group select:focus, .filter-group input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
-    }
-
-    .filter-buttons {
-      display: flex;
-      gap: 10px;
-      align-self: flex-end;
-      margin-top: 20px;
-    }
-
-    .btn-filter {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: var(--border-radius);
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-filter:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .btn-reset {
-      background-color: var(--light-color);
-      color: var(--dark-color);
-      border: 1px solid #ddd;
-      padding: 8px 15px;
-      border-radius: var(--border-radius);
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-reset:hover {
-      background-color: #e5e7eb;
-    }
-
-    /* Notification Styling */
-    .notification-list {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .notification-item {
-      padding: 15px;
-      border-radius: var(--border-radius);
-      border-left: 4px solid;
-      background-color: var(--light-color);
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
-      transition: all 0.3s ease;
-    }
-
-    .notification-item:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--box-shadow);
-    }
-
-    .notification-item.unread {
-      background-color: #f0f7ff;
-    }
-
-    .notification-item.alert {
-      border-left-color: var(--danger-color);
-    }
-
-    .notification-item.warning {
-      border-left-color: var(--warning-color);
-    }
-
-    .notification-item.info {
-      border-left-color: var(--info-color);
-    }
-
-    .notification-item.success {
-      border-left-color: var(--success-color);
-    }
-
-    .notification-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .notification-icon.alert {
-      background-color: rgba(239, 68, 68, 0.1);
-      color: var(--danger-color);
-    }
-
-    .notification-icon.warning {
-      background-color: rgba(245, 158, 11, 0.1);
-      color: var(--warning-color);
-    }
-
-    .notification-icon.info {
-      background-color: rgba(59, 130, 246, 0.1);
-      color: var(--info-color);
-    }
-
-    .notification-icon.success {
-      background-color: rgba(16, 185, 129, 0.1);
-      color: var(--success-color);
-    }
-
-    .notification-icon i {
-      font-size: 18px;
-    }
-
-    .notification-content {
-      flex: 1;
-    }
-
-    .notification-title {
-      font-weight: 600;
-      margin: 0 0 5px;
-      font-size: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .notification-date {
-      font-size: 12px;
-      color: var(--secondary-color);
-      font-weight: normal;
-    }
-
-    .notification-message {
-      margin: 0;
-      font-size: 14px;
-      color: var(--secondary-color);
-    }
-
-    .notification-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .notification-action {
-      font-size: 12px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.3s ease;
-    }
-
-    .action-view {
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    .action-view:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .action-mark {
-      background-color: var(--light-color);
-      color: var(--dark-color);
-      border: 1px solid #ddd;
-    }
-
-    .action-mark:hover {
-      background-color: #e5e7eb;
-    }
-
-    .no-data {
-      text-align: center;
-      padding: 40px 0;
-      color: var(--secondary-color);
-      font-style: italic;
-    }
-
-    .notification-badge.large {
-      position: relative;
+      position: fixed;
+      left: 0;
       top: 0;
-      right: 0;
-      margin-left: 10px;
-      width: 24px;
-      height: 24px;
+      bottom: 0;
     }
 
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin-top: 25px;
-      gap: 5px;
+    .main-content {
+      margin-left: 240px;
+      padding: 40px 40px 40px 40px;
+      width: calc(100vw - 240px);
+      min-height: 100vh;
+      background: linear-gradient(120deg, #f8fafc 0%, #e2e8f0 100%);
+      box-sizing: border-box;
     }
-
-    .pagination-item {
-      width: 35px;
-      height: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 5px;
-      background-color: white;
-      border: 1px solid #ddd;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: var(--dark-color);
-    }
-
-    .pagination-item:hover {
-      background-color: var(--light-color);
-    }
-
-    .pagination-item.active {
-      background-color: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
-    }
-
-    /* Responsive Styling */
-    @media (max-width: 1024px) {
-      .sidebar {
-        width: 70px;
-        padding: 20px 10px;
-      }
-
-      .main-content {
-        margin-left: 90px;
-        width: calc(100% - 90px);
-      }
-
-      .logo-container span, .menu li span, .report h4, .report li span, .logout span {
-        display: none;
-      }
-
-      .logo-container {
-        justify-content: center;
-      }
-
-      .menu li, .report li {
-        justify-content: center;
-        padding: 15px 10px;
-      }
-
-      .menu li i, .report li i {
-        margin-right: 0;
-        font-size: 20px;
-      }
-
-      .logout {
-        padding: 15px 0;
-      }
-
-      .logout i {
-        margin-right: 0;
-      }
-    }
-
+    
+    /* Mobile responsive styles */
     @media (max-width: 768px) {
-      .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 20px;
-      }
-
       .sidebar {
         transform: translateX(-100%);
         z-index: 1000;
+        transition: transform 0.3s;
       }
-
+      
       .sidebar.active {
         transform: translateX(0);
       }
-
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-      }
-
-      .search-notification {
+      
+      .main-content {
+        margin-left: 0;
         width: 100%;
-        justify-content: space-between;
-      }
-
-      .filters {
-        flex-direction: column;
-      }
-
-      .filter-buttons {
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .btn-filter, .btn-reset {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .notification-actions {
-        flex-direction: column;
-      }
-
-      .notification-action {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .search {
-        display: none;
       }
     }
   </style>
 </head>
-<body>
-  <div class="dashboard-container">
+
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <!-- Logo Section -->
       <div class="logo-container">
         <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
         <span>PayTrack</span>
@@ -693,169 +76,206 @@
         <ul>
           <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
           {% if is_homeowner %}
-          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
-        {% else %}
-          <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
-        {% endif %}
-        {% if is_homeowner %}
-        <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
-      {% else %}
-        <li><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
-      {% endif %}
-          {% if is_homeowner %}
-          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+          <div class="dashboard-container">
+            <!-- Toggle Sidebar Button for Mobile -->
+            <button class="toggle-sidebar">
+              <i class="fas fa-bars"></i>
+            </button>
+          
+            <!-- Sidebar -->
+            <aside class="sidebar">
+              <!-- Logo Section -->
+              <div class="logo-container">
+                <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+                <span>PayTrack</span>
+              </div>
+              <nav class="menu">
+                <ul>
+                  <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                  <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+                  <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+                  <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+                  <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+                  <li>
+                    <a href="{% url 'homeowner_payment_history' %}">
+                      <i class="fas fa-wallet"></i> 
+                      <span>Payment History</span>
+                    </a>
+                  </li>
+                  <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+        <li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
+        
+                  <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+                </ul>
+              </nav>
+              <!-- <div class="report">
+                <h4>Report</h4>
+                <ul>
+                  <li><a href="{% url 'payment_details' %}"><i class="fas fa-file-alt"></i> <span>Payment Details</span></a></li>
+                  <li><a href="{% url 'transactions' %}"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+                  <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> <span>Report</span></a></li>
+                  <li><a href="#"><i class="fas fa-chart-line"></i> <span>Maintainence Request Form</span></a></li>
+        
+        
+                </ul>
+              </div> -->
+              <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+              </button>
+            </aside>
+          {% else %}
+            <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+            <li><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+            <li><a href="/maintenance/requests/"><i class="fas fa-wrench"></i> <span>Maintenance Requests</span></a></li>
+            <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+            <li class="active"><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+            <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+            <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+            <li><a href="{% url 'tenant_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Signed Leases</span></a></li>
           {% endif %}
-          <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
-          {% if is_homeowner %}
-          <li>
-            <a href="{% url 'homeowner_payment_history' %}">
-              <i class="fas fa-wallet"></i> 
-              <span>Payment History</span>
-            </a>
-          </li>
-        {% else %}
-          <li>
-            <a href="{% url 'rent_payments' %}">
-              <i class="fas fa-wallet"></i> 
-              <span>Rent Payments</span>
-            </a>
-          </li>
-        {% endif %}
 
-          <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
-<li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
-
-          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
         </ul>
       </nav>
-      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
-        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-      </button>
+      <div class="mt-auto pt-8">
+        <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-red-500 hover:bg-red-100 rounded">
+          <i class="fas fa-sign-out-alt mr-3"></i> <span>Logout</span>
+        </a>
+      </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content space-y-10">
       <!-- Header -->
-      <header class="header">
-        <div class="header-content">
-          <h1><i class="fas fa-bell"></i> Notifications</h1>
-          <p class="date" id="currentDateTime"><i class="fas fa-calendar-alt"></i> Loading...</p>
-        </div>
-        <div class="search-notification">
-          <div class="search">
-            <input type="text" id="notificationSearch" placeholder="Search notifications...">
-            <button>
-              <i class="fas fa-search"></i> Search
-            </button>
-          </div>
-          <div class="notification">
-            <i class="fas fa-bell"></i>
-            {% if unread_count > 0 %}
-              <span class="notification-badge">{{ unread_count }}</span>
-            {% endif %}
-          </div>
-        </div>
-      </header>
-
-      <!-- Notification List Section -->
-      <section class="notification-section">
-        <div class="section-header">
-          <h2>
-            <i class="fas fa-bell"></i> Notifications 
-            {% if unread_count > 0 %}
-              <span class="notification-badge large">{{ unread_count }}</span>
-            {% endif %}
-          </h2>
-          <button class="action-btn" id="markAllRead">
-            <i class="fas fa-check-double"></i> Mark All as Read
-          </button>
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-semibold"><i class="fas fa-bell text-blue-600"></i> Notifications</h1>
+          <p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar-alt"></i> <span id="currentDateTime">Loading...</span></p>
         </div>
         
-        <!-- Filters -->
-        <div class="filters">
-          <div class="filter-group">
-            <label for="type-filter">Type</label>
-            <select id="type-filter">
+        <!-- Search Bar (Optional) -->
+        <div class="relative">
+          <input type="text" id="notificationSearch" placeholder="Search notifications..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <div class="absolute left-3 top-2.5 text-gray-400">
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Counter & Actions -->
+      <div class="bg-white p-6 rounded-lg shadow flex justify-between items-center">
+        <div class="flex items-center">
+          <h2 class="text-lg font-semibold">
+            <i class="fas fa-bell text-blue-600 mr-2"></i> 
+            All Notifications
+            {% if unread_count > 0 %}
+              <span class="ml-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full">{{ unread_count }}</span>
+            {% endif %}
+          </h2>
+        </div>
+        <button id="markAllRead" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+          <i class="fas fa-check-double mr-2"></i> Mark All as Read
+        </button>
+      </div>
+
+      <!-- Filter Section (Optional) -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label for="type-filter" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <select id="type-filter" class="w-full rounded-md border border-gray-300 p-2">
               <option value="">All Types</option>
               <option value="alert">Alerts</option>
-              <option value="warning">Warnings</option>
               <option value="info">Information</option>
               <option value="success">Success</option>
             </select>
           </div>
           
-          <div class="filter-group">
-            <label for="status-filter">Status</label>
-            <select id="status-filter">
+          <div>
+            <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select id="status-filter" class="w-full rounded-md border border-gray-300 p-2">
               <option value="">All Statuses</option>
               <option value="read">Read</option>
               <option value="unread">Unread</option>
             </select>
           </div>
           
-          <div class="filter-group">
-            <label for="date-filter">Date Range</label>
-            <select id="date-filter">
+          <div>
+            <label for="date-filter" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+            <select id="date-filter" class="w-full rounded-md border border-gray-300 p-2">
               <option value="">All Time</option>
               <option value="today">Today</option>
               <option value="week">This Week</option>
               <option value="month">This Month</option>
             </select>
           </div>
-          
-          <div class="filter-buttons">
-            <button class="btn-filter">
-              <i class="fas fa-filter"></i> Apply Filters
-            </button>
-            <button class="btn-reset">
-              <i class="fas fa-redo"></i> Reset
-            </button>
-          </div>
         </div>
         
-        <!-- Notifications List -->
-        <div class="notification-list">
+        <div class="flex justify-end gap-3">
+          <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center" id="resetFilters">
+            <i class="fas fa-redo mr-2"></i> Reset
+          </button>
+          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center" id="applyFilters">
+            <i class="fas fa-filter mr-2"></i> Apply Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Notifications List -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <div class="space-y-4" id="notificationsList">
           {% if notifications %}
             {% for notification in notifications %}
-              <div class="notification-item {% if not notification.is_read %}unread{% endif %} info">
-                <div class="notification-icon info">
-                  <i class="fas fa-info-circle"></i>
-                </div>
-                <div class="notification-content">
-                  <h3 class="notification-title">
-                    Notification
-                    <span class="notification-date">{{ notification.created_at|date:"M d, Y" }} at {{ notification.created_at|date:"h:i A" }}</span>
-                  </h3>
-                  <p class="notification-message">{{ notification.message }}</p>
-                  <div class="notification-actions">
+              <div class="notification-item {% if not notification.is_read %}bg-blue-50 border-l-4 border-blue-500{% else %}bg-gray-50 border-l-4 border-gray-300{% endif %} p-4 rounded shadow-sm">
+                <div class="flex gap-4">
+                  <div class="{% if not notification.is_read %}text-blue-500{% else %}text-gray-400{% endif %} mt-1">
+                    <i class="fas fa-info-circle text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between">
+                      <h3 class="font-semibold text-gray-800">Notification</h3>
+                      <span class="text-xs text-gray-500">{{ notification.created_at|date:"M d, Y" }} at {{ notification.created_at|date:"h:i A" }}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-1">{{ notification.message }}</p>
                     {% if not notification.is_read %}
-                      <a href="#" class="notification-action action-mark" data-id="{{ notification.id }}">
-                        <i class="fas fa-check"></i> Mark as Read
-                      </a>
+                      <div class="mt-3">
+                        <a href="#" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded inline-flex items-center mark-read-btn" data-id="{{ notification.id }}">
+                          <i class="fas fa-check mr-1"></i> Mark as Read
+                        </a>
+                      </div>
                     {% endif %}
                   </div>
                 </div>
               </div>
             {% endfor %}
           {% else %}
-            <div class="no-data">
-              <i class="fas fa-bell-slash" style="font-size: 48px; color: var(--secondary-color); display: block; margin-bottom: 15px;"></i>
-              No notifications found
+            <div class="text-center py-10 text-gray-500">
+              <i class="fas fa-bell-slash text-4xl mb-3 block"></i>
+              <p>No notifications found</p>
             </div>
           {% endif %}
         </div>
         
         <!-- Pagination -->
-        <div class="pagination">
-          <a href="#" class="pagination-item"><i class="fas fa-angle-double-left"></i></a>
-          <a href="#" class="pagination-item"><i class="fas fa-angle-left"></i></a>
-          <a href="#" class="pagination-item active">1</a>
-          <a href="#" class="pagination-item">2</a>
-          <a href="#" class="pagination-item">3</a>
-          <a href="#" class="pagination-item"><i class="fas fa-angle-right"></i></a>
-          <a href="#" class="pagination-item"><i class="fas fa-angle-double-right"></i></a>
+        <div class="mt-6 flex justify-center">
+          <nav class="flex space-x-2">
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
+              <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
+              <i class="fas fa-angle-left"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border bg-blue-600 text-white">1</a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">2</a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">3</a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
+              <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
+              <i class="fas fa-angle-double-right"></i>
+            </a>
+          </nav>
         </div>
-      </section>
+      </div>
     </main>
   </div>
 
@@ -865,9 +285,9 @@
       const dateElement = document.getElementById('currentDateTime');
       const now = new Date();
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      dateElement.innerHTML = '<i class="fas fa-calendar-alt mr-2"></i> ' + now.toLocaleDateString('en-US', options);
+      dateElement.textContent = now.toLocaleDateString('en-US', options);
       
-      // Toggle sidebar on mobile devices
+      // Mobile menu toggle
       const menuToggle = document.createElement('button');
       menuToggle.classList.add('menu-toggle');
       menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
@@ -875,7 +295,7 @@
       menuToggle.style.top = '20px';
       menuToggle.style.left = '20px';
       menuToggle.style.zIndex = '1001';
-      menuToggle.style.background = 'var(--primary-color)';
+      menuToggle.style.background = '#040404';
       menuToggle.style.color = 'white';
       menuToggle.style.border = 'none';
       menuToggle.style.borderRadius = '5px';
@@ -907,10 +327,8 @@
           const notifications = document.querySelectorAll('.notification-item');
           
           notifications.forEach(notification => {
-            const title = notification.querySelector('.notification-title').textContent.toLowerCase();
-            const message = notification.querySelector('.notification-message').textContent.toLowerCase();
-            
-            if (title.includes(searchTerm) || message.includes(searchTerm)) {
+            const content = notification.textContent.toLowerCase();
+            if (content.includes(searchTerm)) {
               notification.style.display = '';
             } else {
               notification.style.display = 'none';
@@ -920,60 +338,29 @@
       }
       
       // Filter functionality
+      const applyFilters = document.getElementById('applyFilters');
+      const resetFilters = document.getElementById('resetFilters');
       const typeFilter = document.getElementById('type-filter');
       const statusFilter = document.getElementById('status-filter');
       const dateFilter = document.getElementById('date-filter');
-      const applyFilters = document.querySelector('.btn-filter');
-      const resetFilters = document.querySelector('.btn-reset');
       
       if (applyFilters) {
         applyFilters.addEventListener('click', function() {
-          const typeValue = typeFilter ? typeFilter.value.toLowerCase() : '';
-          const statusValue = statusFilter ? statusFilter.value.toLowerCase() : '';
-          const dateValue = dateFilter ? dateFilter.value.toLowerCase() : '';
-          
+          // Filter logic here
           const notifications = document.querySelectorAll('.notification-item');
           
           notifications.forEach(notification => {
-            // Check type filter
-            let typeMatch = true;
-            if (typeValue !== '') {
-              typeMatch = notification.classList.contains(typeValue);
+            let shouldShow = true;
+            
+            // Status filter
+            if (statusFilter.value === 'read') {
+              shouldShow = !notification.classList.contains('bg-blue-50');
+            } else if (statusFilter.value === 'unread') {
+              shouldShow = notification.classList.contains('bg-blue-50');
             }
             
-            // Check status filter
-            let statusMatch = true;
-            if (statusValue === 'read') {
-              statusMatch = !notification.classList.contains('unread');
-            } else if (statusValue === 'unread') {
-              statusMatch = notification.classList.contains('unread');
-            }
-            
-            // Check date filter
-            let dateMatch = true;
-            if (dateValue !== '') {
-              const dateText = notification.querySelector('.notification-date').textContent;
-              const notificationDate = new Date(dateText);
-              const now = new Date();
-              
-              if (dateValue === 'today') {
-                dateMatch = notificationDate.toDateString() === now.toDateString();
-              } else if (dateValue === 'week') {
-                const weekAgo = new Date();
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                dateMatch = notificationDate >= weekAgo;
-              } else if (dateValue === 'month') {
-                const monthAgo = new Date();
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                dateMatch = notificationDate >= monthAgo;
-              }
-            }
-            
-            if (typeMatch && statusMatch && dateMatch) {
-              notification.style.display = '';
-            } else {
-              notification.style.display = 'none';
-            }
+            // Apply filtering
+            notification.style.display = shouldShow ? '' : 'none';
           });
         });
       }
@@ -985,22 +372,19 @@
           if (dateFilter) dateFilter.value = '';
           
           // Reset display of all notifications
-          const notifications = document.querySelectorAll('.notification-item');
-          notifications.forEach(notification => {
+          document.querySelectorAll('.notification-item').forEach(notification => {
             notification.style.display = '';
           });
         });
       }
       
       // Mark as read functionality
-      const markReadButtons = document.querySelectorAll('.action-mark');
-      markReadButtons.forEach(button => {
+      document.querySelectorAll('.mark-read-btn').forEach(button => {
         button.addEventListener('click', function(e) {
           e.preventDefault();
           const notificationId = this.getAttribute('data-id');
           const notificationItem = this.closest('.notification-item');
-          const markReadButton = this;
-      
+          
           fetch("{% url 'mark_notification_read' %}", {
             method: 'POST',
             headers: {
@@ -1012,17 +396,17 @@
           .then(response => response.json())
           .then(data => {
             if (data.status === 'success') {
-              notificationItem.classList.remove('unread');
-              markReadButton.remove();
-      
-              // Decrement badge count
-              const badges = document.querySelectorAll('.notification-badge');
-              badges.forEach(badge => {
+              notificationItem.classList.remove('bg-blue-50', 'border-blue-500');
+              notificationItem.classList.add('bg-gray-50', 'border-gray-300');
+              this.remove();
+              
+              // Update unread count
+              const countBadges = document.querySelectorAll('.bg-red-500');
+              countBadges.forEach(badge => {
                 let count = parseInt(badge.textContent);
-                if (count > 0) {
-                  count -= 1;
-                  badge.textContent = count;
-                  if (count === 0) badge.style.display = 'none';
+                badge.textContent = count - 1;
+                if (count <= 1) {
+                  badge.style.display = 'none';
                 }
               });
             }
@@ -1047,15 +431,16 @@
           .then(response => response.json())
           .then(data => {
             if (data.status === 'success') {
-              document.querySelectorAll('.notification-item.unread').forEach(notification => {
-                notification.classList.remove('unread');
-                const markBtn = notification.querySelector('.action-mark');
-                if (markBtn) markBtn.remove();
+              // Update all unread notifications to read
+              document.querySelectorAll('.notification-item.bg-blue-50').forEach(item => {
+                item.classList.remove('bg-blue-50', 'border-blue-500');
+                item.classList.add('bg-gray-50', 'border-gray-300');
+                const readBtn = item.querySelector('.mark-read-btn');
+                if (readBtn) readBtn.remove();
               });
- 
-              // Reset badge counters
-              document.querySelectorAll('.notification-badge').forEach(badge => {
-                badge.textContent = '0';
+              
+              // Hide all badges
+              document.querySelectorAll('.bg-red-500').forEach(badge => {
                 badge.style.display = 'none';
               });
             }
@@ -1067,6 +452,6 @@
       }
     });
   </script>
- </body>
- </html>
- {% endblock %}
+</body>
+</html>
+{% endblock %}

@@ -584,8 +584,19 @@ def properties_list(request):
     # Filtering
     location = request.GET.get('location', '')
     property_type = request.GET.get('property_type', '')
+    # Support both min_price/max_price and price_range (from landing page)
+    price_range = request.GET.get('price_range', '')
     min_price = request.GET.get('min_price', '')
     max_price = request.GET.get('max_price', '')
+    bedrooms = request.GET.get('bedrooms', '')
+
+    # Parse price_range if present (e.g., '1000000 - 5000000')
+    if price_range:
+        import re
+        match = re.match(r'\s*(\d{1,3}(?:,\d{2,3})*)\s*[-–]\s*(\d{1,3}(?:,\d{2,3})*)', price_range)
+        if match:
+            min_price = match.group(1).replace(',', '')
+            max_price = match.group(2).replace(',', '')
 
     if location:
         all_properties = all_properties.filter(location__icontains=location)
@@ -595,6 +606,15 @@ def properties_list(request):
         all_properties = all_properties.filter(price__gte=min_price)
     if max_price:
         all_properties = all_properties.filter(price__lte=max_price)
+    if bedrooms:
+        try:
+            bedrooms_int = int(bedrooms)
+            if bedrooms_int == 5:
+                all_properties = all_properties.filter(bedrooms__gte=5)
+            else:
+                all_properties = all_properties.filter(bedrooms=bedrooms_int)
+        except ValueError:
+            pass
 
     return render(request, 'user/properties_list.html', {
         'featured_properties': featured_properties,
@@ -697,7 +717,8 @@ def tenant_dashboard(request):
             'date': next_due_payment.month if next_due_payment else None,
         },
         'notification_count': Notification.objects.filter(user=request.user, is_read=False).count(),  # Update with real logic later
-        'requests': maintenance_requests
+        'requests': maintenance_requests,
+        'user_name': user.get_full_name() or user.username 
     }
 
     return render(request, 'user/tenant_dashboard.html', context)
@@ -1308,7 +1329,7 @@ def sign_rental_lease(request, lease_id):
        )
        
        messages.success(request, "Lease agreement signed successfully! Your rental is now active.")
-       return redirect('my_rentals')
+       return redirect('tenant_signed_leases')
    
    return render(request, 'user/sign_rental_lease.html', {'lease': lease})
 
@@ -1412,11 +1433,11 @@ def homeowner_sign_lease(request, lease_id):
                )
            
            messages.success(request, "Lease agreement signed successfully!")
-           return redirect('view_rental_lease', lease_id=lease.id)
+           return redirect('homeowner_signed_leases')
        else:
            messages.error(request, "Please provide your signature.")
    
-   return redirect('view_rental_lease', lease_id=lease.id)
+   return redirect('homeowner_pending_leases')
 
 @login_required
 def terminate_lease(request, rental_id):
@@ -1643,4 +1664,40 @@ def delete_rental_request(request, request_id):
         messages.success(request, "Rental request has been permanently deleted.")
     
     return redirect('booking_list')
+
+def search_properties(request):
+    """View for searching properties based on various criteria"""
+    properties = Property.objects.all()
+    
+    # Get search parameters
+    location = request.GET.get('location', '')
+    property_type = request.GET.get('property_type', '')
+    price_range = request.GET.get('price_range', '')
+    bedrooms = request.GET.get('bedrooms', '')
+    
+    # Apply filters
+    if location:
+        properties = properties.filter(location__icontains=location)
+    if property_type:
+        properties = properties.filter(property_type=property_type)
+    if bedrooms:
+        properties = properties.filter(bedrooms=bedrooms)
+    if price_range:
+        try:
+            min_price, max_price = map(int, price_range.replace('NPR', '').replace(',', '').split('-'))
+            properties = properties.filter(price__gte=min_price, price__lte=max_price)
+        except (ValueError, TypeError):
+            pass
+    
+    context = {
+        'properties': properties,
+        'search_params': {
+            'location': location,
+            'property_type': property_type,
+            'price_range': price_range,
+            'bedrooms': bedrooms
+        }
+    }
+    return render(request, 'user/search_results.html', context)
+
 

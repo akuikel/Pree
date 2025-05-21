@@ -12,17 +12,148 @@
       font-family: 'Poppins', sans-serif;
       background-color: #f5f7fa;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       color: #333;
     }
+    
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: #111;
+      color: #fff;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 24px 0 0 0;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+    
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+      width: calc(100% - 240px);
+      min-width: 0;
+      min-height: 100vh;
+      background: #f5f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .logo {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .logo-container span {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .menu {
+      width: 100%;
+      flex: 1;
+    }
+    
+    .menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    
+    .menu li {
+      width: 100%;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .menu li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      font-size: 16px;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .menu li a i {
+      min-width: 20px;
+      font-size: 17px;
+      color: #fff;
+      transition: color 0.2s;
+    }
+    
+    .menu a:hover {
+      background: #23272f;
+      color: #fff;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    
+    .logout {
+      margin-top: auto;
+      margin-bottom: 24px;
+      width: calc(100% - 48px);
+      margin-left: 24px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff4d5f;
+      color: #fff;
+      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    
+    .logout:hover {
+      background-color: #d9364a;
+    }
+    
     .container {
-      max-width: 1200px;
+      max-width: 1500px;
       margin: 0 auto;
       background: white;
       border-radius: 10px;
-      padding: 30px;
+      padding: 20px;
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      overflow-x: auto; /* Enables horizontal scrolling */
     }
+    
     h1 {
       font-size: 24px;
       font-weight: 600;
@@ -30,7 +161,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-left: 0;
     }
+    
     .back-btn {
       background-color: #6c757d;
       color: white;
@@ -41,66 +174,116 @@
       margin-bottom: 20px;
       display: inline-block;
     }
+    
     .styled-table {
       width: 100%;
       border-collapse: collapse;
       margin: 20px 0;
-      font-size: 14px;
+      font-size: 13px; /* Reduced font size */
+      background: white;
+      border-radius: 8px;
+      table-layout: auto; /* Ensures the table respects column widths */
     }
+    
     .styled-table thead tr {
       background-color: #010101;
       color: white;
     }
+    
     .styled-table th,
     .styled-table td {
-      padding: 12px 15px;
+      padding: 8px 10px; /* Reduced padding */
       text-align: left;
       border-bottom: 1px solid #ddd;
+      white-space: nowrap; /* Prevents text wrapping */
     }
+    
+    /* Set specific widths for columns */
+    .styled-table th:nth-child(1), 
+    .styled-table td:nth-child(1) {
+      max-width: 150px; /* Property column */
+    }
+    
+    .styled-table th:nth-child(2), 
+    .styled-table td:nth-child(2) {
+      max-width: 120px; /* Location column */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .styled-table th:nth-child(3), 
+    .styled-table td:nth-child(3) {
+      max-width: 120px; /* Tenant column */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .styled-table th:nth-child(4), 
+    .styled-table td:nth-child(4) {
+      max-width: 100px; /* Monthly Rent column */
+    }
+    
+    .styled-table th:nth-child(5), 
+    .styled-table td:nth-child(5),
+    .styled-table th:nth-child(6), 
+    .styled-table td:nth-child(6),
+    .styled-table th:nth-child(7), 
+    .styled-table td:nth-child(7) {
+      max-width: 90px; /* Date columns */
+    }
+    
+    .styled-table th:nth-child(8), 
+    .styled-table td:nth-child(8) {
+      min-width: 120px; /* Actions column - prevent wrapping of buttons */
+    }
+    
     .styled-table tbody tr:hover {
       background-color: #f8f9fa;
     }
+    
     .btn-action {
-      padding: 6px 12px;
-      border-radius: 5px;
+      padding: 4px 8px;
+      border-radius: 4px;
       text-decoration: none;
-      font-size: 12px;
+      font-size: 11px;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      margin-right: 5px;
+      gap: 3px;
+      margin-right: 4px;
       color: white;
     }
+    
     .btn-view {
       background-color: #3b82f6;
     }
+    
     .btn-id {
       background-color: #10b981;
     }
+    
     .no-data {
       text-align: center;
       padding: 40px;
       color: #6c757d;
     }
-    .status-badge {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      background-color: #10b981;
-      color: white;
-    }
+    
     .property-info {
       display: flex;
       flex-direction: column;
       gap: 2px;
+      max-width: 150px;
     }
+    
     .property-title {
       font-weight: 500;
       color: #1f2937;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Shows "..." for overflowed text */
+      white-space: nowrap;
     }
+    
     .property-type {
-      font-size: 12px;
+      font-size: 11px;
       color: #6b7280;
     }
     
@@ -116,6 +299,7 @@
       overflow: auto;
       background-color: rgba(0,0,0,0.9);
     }
+    
     .modal-content {
       margin: 5% auto;
       padding: 20px;
@@ -125,6 +309,7 @@
       border-radius: 10px;
       position: relative;
     }
+    
     .close {
       color: #aaa;
       float: right;
@@ -132,12 +317,14 @@
       font-weight: bold;
       cursor: pointer;
     }
+    
     .close:hover,
     .close:focus {
       color: #000;
       text-decoration: none;
       cursor: pointer;
     }
+    
     .id-images {
       display: flex;
       gap: 20px;
@@ -145,13 +332,16 @@
       justify-content: center;
       padding: 20px;
     }
+    
     .id-image-wrapper {
       text-align: center;
     }
+    
     .id-image-wrapper h4 {
       margin-bottom: 10px;
       color: #333;
     }
+    
     .id-image-wrapper img {
       max-width: 400px;
       max-height: 300px;
@@ -159,126 +349,187 @@
       border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    
     .no-id-text {
       text-align: center;
       color: #6c757d;
       padding: 20px;
     }
+    
+    /* Responsive styles */
+    @media (max-width: 900px) {
+      .main-content {
+        margin-left: 0;
+        padding: 10px;
+        width: 100%;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+      
+      .container {
+        padding: 15px;
+      }
+      
+      .styled-table th,
+      .styled-table td {
+        padding: 6px 8px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a href="{% url 'dashboard' %}" class="back-btn">
-      <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          {% if is_homeowner %}
+            <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+            <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+            <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+            <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+            <li><a href="{% url 'homeowner_payment_history' %}"><i class="fas fa-wallet"></i> <span>Payment History</span></a></li>
+            <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+            <li class="active"><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
+          {% else %}
+            <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+            <li><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+            <li><a href="/maintenance/requests/"><i class="fas fa-wrench"></i> <span>Maintenance Requests</span></a></li>
+            <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+            <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+            <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+            <li><a href="{% url 'tenant_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Signed Leases</span></a></li>
+          {% endif %}
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+        </ul>
+      </nav>
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
+    </aside>
     
-    <h1><i class="fas fa-file-contract"></i> Signed Lease Agreements</h1>
-    
-    <table class="styled-table">
-      <thead>
-        <tr>
-          <th>Property</th>
-          <th>Location</th>
-          <th>Tenant</th>
-          <th>Monthly Rent</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Signed On</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if signed_leases %}
-          {% for lease in signed_leases %}
-          <tr>
-            <td>
-              <div class="property-info">
-                <span class="property-title">{{ lease.rental_request.property.title }}</span>
-                <span class="property-type">{{ lease.rental_request.property.get_property_type_display }}</span>
-              </div>
-            </td>
-            <td>{{ lease.rental_request.property.location }}</td>
-            <td>{{ lease.rental_request.tenant.get_full_name|default:lease.rental_request.tenant.email }}</td>
-            <td>NPR {{ lease.rental_request.property.price|floatformat:2 }}</td>
-            <td>{{ lease.rental_request.start_date|date:"M d, Y" }}</td>
-            <td>{{ lease.rental_request.end_date|date:"M d, Y"|default:"N/A" }}</td>
-            <td>{{ lease.tenant_signed_at|date:"M d, Y" }}</td>
-            <td>
-              <a href="{% url 'view_rental_lease' lease.id %}" class="btn-action btn-view">
-                <i class="fas fa-eye"></i> View
-              </a>
-              {% if lease.tenant_id_front or lease.tenant_id_back %}
-              <button onclick="showIDModal({{ lease.id }})" class="btn-action btn-id">
-                <i class="fas fa-id-card"></i> View Tenant ID
-              </button>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container">
+        <a href="{% url 'dashboard' %}" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1><i class="fas fa-file-contract"></i> Signed Lease Agreements</h1>
+        <div style="overflow-x: auto; width: 100%;">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Location</th>
+                <th>Tenant</th>
+                <th>Monthly Rent</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Signed On</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if signed_leases %}
+                {% for lease in signed_leases %}
+                <tr>
+                  <td>
+                    <div class="property-info">
+                      <span class="property-title">{{ lease.rental_request.property.title }}</span>
+                      <span class="property-type">{{ lease.rental_request.property.get_property_type_display }}</span>
+                    </div>
+                  </td>
+                  <td>{{ lease.rental_request.property.location }}</td>
+                  <td>{{ lease.rental_request.tenant.get_full_name|default:lease.rental_request.tenant.email }}</td>
+                  <td>NPR {{ lease.rental_request.property.price|floatformat:2 }}</td>
+                  <td>{{ lease.rental_request.start_date|date:"M d, Y" }}</td>
+                  <td>{{ lease.rental_request.end_date|date:"M d, Y"|default:"N/A" }}</td>
+                  <td>{{ lease.tenant_signed_at|date:"M d, Y" }}</td>
+                  <td>
+                    <a href="{% url 'view_rental_lease' lease.id %}" class="btn-action btn-view">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    {% if lease.tenant_id_front or lease.tenant_id_back %}
+                    <button onclick="showIDModal({{ lease.id }})" class="btn-action btn-id">
+                      <i class="fas fa-id-card"></i> ID
+                    </button>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="8" class="no-data">
+                    <i class="fas fa-info-circle"></i> No signed lease agreements yet.
+                  </td>
+                </tr>
               {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- ID Modal -->
+      <div id="idModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2 style="text-align: center; margin-bottom: 20px;">
+            <i class="fas fa-id-card"></i> Tenant ID Documents
+          </h2>
+          <div id="idContentContainer">
+            <!-- Content will be loaded here -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Hidden ID containers for each lease -->
+      {% for lease in signed_leases %}
+      <div id="idContent_{{ lease.id }}" style="display: none;">
+        {% if lease.tenant_id_front or lease.tenant_id_back %}
+          <div class="id-images">
+            {% if lease.tenant_id_front %}
+            <div class="id-image-wrapper">
+              <h4>ID Front</h4>
+              <img src="{{ lease.tenant_id_front.url }}" alt="ID Front">
+            </div>
+            {% endif %}
+            {% if lease.tenant_id_back %}
+            <div class="id-image-wrapper">
+              <h4>ID Back</h4>
+              <img src="{{ lease.tenant_id_back.url }}" alt="ID Back">
+            </div>
+            {% endif %}
+          </div>
         {% else %}
-          <tr>
-            <td colspan="8" class="no-data">
-              <i class="fas fa-info-circle"></i> No signed lease agreements yet.
-            </td>
-          </tr>
-        {% endif %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ID Modal -->
-  <div id="idModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 style="text-align: center; margin-bottom: 20px;">
-        <i class="fas fa-id-card"></i> Tenant ID Documents
-      </h2>
-      <div id="idContentContainer">
-        <!-- Content will be loaded here -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Hidden ID containers for each lease -->
-  {% for lease in signed_leases %}
-  <div id="idContent_{{ lease.id }}" style="display: none;">
-    {% if lease.tenant_id_front or lease.tenant_id_back %}
-      <div class="id-images">
-        {% if lease.tenant_id_front %}
-        <div class="id-image-wrapper">
-          <h4>ID Front</h4>
-          <img src="{{ lease.tenant_id_front.url }}" alt="ID Front">
-        </div>
-        {% endif %}
-        
-        {% if lease.tenant_id_back %}
-        <div class="id-image-wrapper">
-          <h4>ID Back</h4>
-          <img src="{{ lease.tenant_id_back.url }}" alt="ID Back">
-        </div>
+          <p class="no-id-text">No ID documents uploaded by tenant.</p>
         {% endif %}
       </div>
-    {% else %}
-      <p class="no-id-text">No ID documents uploaded by tenant.</p>
-    {% endif %}
+      {% endfor %}
+    </main>
   </div>
-  {% endfor %}
-
+  
   <script>
     // Get the modal
     var modal = document.getElementById("idModal");
     var span = document.getElementsByClassName("close")[0];
-
+    
     function showIDModal(leaseId) {
       modal.style.display = "block";
       var content = document.getElementById("idContent_" + leaseId).innerHTML;
       document.getElementById("idContentContainer").innerHTML = content;
     }
-
+    
     span.onclick = function() {
       modal.style.display = "none";
     }
-
+    
     window.onclick = function(event) {
       if (event.target == modal) {
         modal.style.display = "none";

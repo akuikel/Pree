@@ -1,0 +1,8 @@
+def user_type(request):
+    """Add user_type related context variables to all templates."""
+    context = {}
+    if request.user.is_authenticated:
+        context['is_homeowner'] = request.user.user_type.lower() == 'home owner'
+    else:
+        context['is_homeowner'] = False
+    return context

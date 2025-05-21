@@ -148,12 +148,12 @@ a:hover {
     <!-- Search Bar -->
 <div class="bg-gray-100 py-8">
     <div class="container mx-auto px-6">
-        <div class="bg-white p-8 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="get" action="{% url 'properties_list' %}" class="bg-white p-8 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Location Input -->
-            <input type="text" placeholder="Enter location (e.g., Kathmandu, Pokhara)"
-                class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="text" name="location" placeholder="Enter location (e.g., Kathmandu, Pokhara)"
+                 class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <!-- Property Type -->
-            <select
+            <select name="property_type"
                 class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Property Type</option>
                 <option value="house">House</option>
@@ -163,10 +163,10 @@ a:hover {
                 <option value="office">Office</option>
             </select>
             <!-- Price Range -->
-            <input type="text" placeholder="Price Range (e.g., 10,00,000 - 50,00,000 NPR)"
-                class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="text" name="price_range" placeholder="Price Range (e.g., 10,00,000 - 50,00,000 NPR)"
+                 class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <!-- Bedrooms -->
-            <select
+            <select name="bedrooms"
                 class="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Bedrooms</option>
                 <option value="1">1 Bedroom</option>
@@ -176,12 +176,12 @@ a:hover {
             </select>
             <!-- Search Button -->
             <div class="col-span-full md:col-span-1 flex justify-center">
-                <button
+                <button type="submit"
                     class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full md:w-auto">
                     Search
                 </button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
