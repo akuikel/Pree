@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,15 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v5u@pem)9oq5&$6-cwe)+a#%l-!!9zcr-#+kui!)a=rze&dr6t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.now.sh', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-        'jazzmin',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,17 +74,11 @@ TEMPLATES = [
     },
 ]
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
 LOGIN_REDIRECT_URL = '/dashboard/'  # Redirect here after login
 
 WSGI_APPLICATION = 'PayTrack.wsgi.application'
 
-
-
-
-# Database
+# Database - SQLite for demo purposes (data resets with deployment)
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
@@ -91,7 +87,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -111,40 +106,36 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images) - Configured for Vercel
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+
+# For development - comment out for production
+# STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Media files (won't persist on Vercel but OK for demo)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Email Backend for Production
 import ssl
 import certifi
 
-EMAIL_USE_TLS = True  # or EMAIL_USE_SSL = True, depending on your SMTP server
-EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
-
-
-# Email Backend for Production
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -152,22 +143,14 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'evenntaevent@gmail.com'
 EMAIL_HOST_PASSWORD = 'eamj xsmh pnws ljof'
-  # Use App Password if 2FA is enabl
-  #ed
-EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
+EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
-
+# Session Configuration
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 600  # Session expires in 10 minutes
 SESSION_SAVE_EVERY_REQUEST = True
 
-
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-
-
+# Jazzmin Admin Theme Configuration
 JAZZMIN_SETTINGS = {
     # Window title (Defaults to current_admin_site.site_title if None)
     "site_title": "PayTrack Admin",
@@ -199,8 +182,6 @@ JAZZMIN_SETTINGS = {
     # Copyright footer text
     "copyright": "PayTrack Inc. © 2025",
 
-  
-
     # User profile avatar field (ImageField/URLField on CustomUser model)
     "user_avatar": "profile_picture",
 
@@ -213,7 +194,6 @@ JAZZMIN_SETTINGS = {
         {"model": "user.CustomUser"},
         {"model": "property.Property"},
         {"model": "transaction.Transaction"},
-       
     ],
 
     #############
