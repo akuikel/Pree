@@ -1,3 +1,4 @@
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +35,7 @@
     }
 
     .dashboard-container {
-      display: flex; /* Changed from grid to flex */
+      display: flex;
       min-height: 100vh;
       position: relative;
     }
@@ -159,9 +160,9 @@
     .main-content {
       flex: 1;
       padding: 30px;
-      margin-left: 280px; /* Match sidebar width + padding */
+      margin-left: 280px;
       transition: all 0.3s ease;
-      width: calc(100% - 280px); /* Ensure content doesn't extend beyond viewport */
+      width: calc(100% - 280px);
     }
 
     .toggle-sidebar {
@@ -610,10 +611,6 @@
       transition: all 0.3s ease;
     }
 
-    {#.add-property-link:hover {#}
-    {#  background-color: var(--primary-hover);#}
-    {#}#}
-
     /* Table Styling */
     .table-container {
       overflow-x: auto;
@@ -772,7 +769,7 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
-        padding-top: 50px; /* Space for the toggle button */
+        padding-top: 50px;
       }
 
       .search-notification {
@@ -830,31 +827,15 @@
           <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
           <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
           <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="/owner/maintenance/"><i class="fas fa-wrench"></i> <span>Maintenance</span></a></li>
           <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
           <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
-          <li>
-            <a href="{% url 'homeowner_payment_history' %}">
-              <i class="fas fa-wallet"></i> 
-              <span>Payment History</span>
-            </a>
-          </li>
+          <li><a href="{% url 'homeowner_payment_history' %}"><i class="fas fa-wallet"></i> <span>Payment History</span></a></li>
           <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
-<li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
-
+          <li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
           <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
         </ul>
       </nav>
-      <!-- <div class="report">
-        <h4>Report</h4>
-        <ul>
-          <li><a href="{% url 'payment_details' %}"><i class="fas fa-file-alt"></i> <span>Payment Details</span></a></li>
-          <li><a href="{% url 'transactions' %}"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
-          <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> <span>Report</span></a></li>
-          <li><a href="#"><i class="fas fa-chart-line"></i> <span>Maintainence Request Form</span></a></li>
-
-
-        </ul>
-      </div> -->
       <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
         <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
       </button>
@@ -928,45 +909,6 @@
           <a href="{% url 'property_list' %}" class="view-all">View All Properties</a>
         </div>
       </section>
-
-      <!-- My Properties Section -->
-      <!-- <section class="my-properties-section">
-        <div class="section-header">
-          <h2><i class="fas fa-building"></i> My Properties</h2>
-          <a href="{% url 'property_list' %}" class="view-all-link">View All</a>
-        </div>
-        
-        <div class="properties-grid">
-          {% if properties %}
-            {% for property in properties|slice:":3" %}
-              <div class="property-card">
-                <div class="property-image">
-                  <img src="{{ property.image.url }}" alt="{{ property.title }}">
-                  <span class="property-type">{{ property.get_property_type_display }}</span>
-                </div>
-                <div class="property-details">
-                  <h3>{{ property.title }}</h3>
-                  <p class="location"><i class="fas fa-map-marker-alt"></i> {{ property.location }}</p>
-                  <p class="price">NPR {{ property.price|floatformat:2 }}</p>
-                  <div class="property-features">
-                    <span><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</span>
-                    <span><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</span>
-                  </div>
-                  <div class="property-actions">
-                    <a href="{% url 'edit_property' property.id %}" class="edit-btn"><i class="fas fa-edit"></i> Edit</a>
-                    <a href="{% url 'delete_property' property.id %}" class="delete-btn"><i class="fas fa-trash"></i> Delete</a>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          {% else %}
-            <div class="no-properties">
-              <p>You haven't added any properties yet.</p>
-              <a href="{% url 'add_property' %}" class="add-property-link">Add Your First Property</a>
-            </div>
-          {% endif %}
-        </div>
-      </section> -->
 
        <!-- Live Booking Status -->
        <section class="status-section">
@@ -1181,3 +1123,4 @@
   </script>
 </body>
 </html>
+{% endblock %}

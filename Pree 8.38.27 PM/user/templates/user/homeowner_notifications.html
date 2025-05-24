@@ -11,8 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body,
-    html {
+    body, html {
       margin: 0;
       padding: 0;
     }
@@ -66,7 +65,7 @@
 
 <body class="bg-gray-100 font-poppins">
   <div class="min-h-screen flex">
-    <!-- Sidebar -->
+    <!-- Homeowner Sidebar -->
     <aside class="sidebar">
       <div class="logo-container">
         <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
@@ -75,72 +74,20 @@
       <nav class="menu">
         <ul>
           <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-          {% if is_homeowner %}
-          <div class="dashboard-container">
-            <!-- Toggle Sidebar Button for Mobile -->
-            <button class="toggle-sidebar">
-              <i class="fas fa-bars"></i>
-            </button>
-          
-            <!-- Sidebar -->
-            <aside class="sidebar">
-              <!-- Logo Section -->
-              <div class="logo-container">
-                <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
-                <span>PayTrack</span>
-              </div>
-              <nav class="menu">
-                <ul>
-                  <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                  <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
-                  <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
-                  <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
-                  <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
-                  <li>
-                    <a href="{% url 'homeowner_payment_history' %}">
-                      <i class="fas fa-wallet"></i> 
-                      <span>Payment History</span>
-                    </a>
-                  </li>
-                  <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
-        <li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
-        
-                  <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
-                </ul>
-              </nav>
-              <!-- <div class="report">
-                <h4>Report</h4>
-                <ul>
-                  <li><a href="{% url 'payment_details' %}"><i class="fas fa-file-alt"></i> <span>Payment Details</span></a></li>
-                  <li><a href="{% url 'transactions' %}"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
-                  <li><a href="{% url 'report' %}"><i class="fas fa-chart-line"></i> <span>Report</span></a></li>
-                  <li><a href="#"><i class="fas fa-chart-line"></i> <span>Maintainence Request Form</span></a></li>
-        
-        
-                </ul>
-              </div> -->
-              <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
-                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-              </button>
-            </aside>
-          {% else %}
-            <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
-            <li><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
-            <li><a href="/maintenance/requests/"><i class="fas fa-wrench"></i> <span>Maintenance Requests</span></a></li>
-            <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
-            <li class="active"><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
-            <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
-            <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
-            <li><a href="{% url 'tenant_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Signed Leases</span></a></li>
-          {% endif %}
-
+          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="/owner/maintenance/"><i class="fas fa-wrench"></i> <span>Maintenance</span></a></li>
+          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+          <li class="active"><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="{% url 'homeowner_payment_history' %}"><i class="fas fa-wallet"></i> <span>Payment History</span></a></li>
+          <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+          <li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
         </ul>
       </nav>
-      <div class="mt-auto pt-8">
-        <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-red-500 hover:bg-red-100 rounded">
-          <i class="fas fa-sign-out-alt mr-3"></i> <span>Logout</span>
-        </a>
-      </div>
+      <button class="logout" onclick="window.location.href='{% url 'logout' %}'">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </button>
     </aside>
 
     <!-- Main Content -->
@@ -152,7 +99,7 @@
           <p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar-alt"></i> <span id="currentDateTime">Loading...</span></p>
         </div>
         
-        <!-- Search Bar (Optional) -->
+        <!-- Search Bar -->
         <div class="relative">
           <input type="text" id="notificationSearch" placeholder="Search notifications..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <div class="absolute left-3 top-2.5 text-gray-400">
@@ -175,49 +122,6 @@
         <button id="markAllRead" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
           <i class="fas fa-check-double mr-2"></i> Mark All as Read
         </button>
-      </div>
-
-      <!-- Filter Section (Optional) -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <label for="type-filter" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <select id="type-filter" class="w-full rounded-md border border-gray-300 p-2">
-              <option value="">All Types</option>
-              <option value="alert">Alerts</option>
-              <option value="info">Information</option>
-              <option value="success">Success</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select id="status-filter" class="w-full rounded-md border border-gray-300 p-2">
-              <option value="">All Statuses</option>
-              <option value="read">Read</option>
-              <option value="unread">Unread</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="date-filter" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
-            <select id="date-filter" class="w-full rounded-md border border-gray-300 p-2">
-              <option value="">All Time</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="flex justify-end gap-3">
-          <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center" id="resetFilters">
-            <i class="fas fa-redo mr-2"></i> Reset
-          </button>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center" id="applyFilters">
-            <i class="fas fa-filter mr-2"></i> Apply Filters
-          </button>
-        </div>
       </div>
 
       <!-- Notifications List -->
@@ -253,27 +157,6 @@
               <p>No notifications found</p>
             </div>
           {% endif %}
-        </div>
-        
-        <!-- Pagination -->
-        <div class="mt-6 flex justify-center">
-          <nav class="flex space-x-2">
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-              <i class="fas fa-angle-double-left"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-              <i class="fas fa-angle-left"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border bg-blue-600 text-white">1</a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">2</a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">3</a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-              <i class="fas fa-angle-right"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-              <i class="fas fa-angle-double-right"></i>
-            </a>
-          </nav>
         </div>
       </div>
     </main>
@@ -333,47 +216,6 @@
             } else {
               notification.style.display = 'none';
             }
-          });
-        });
-      }
-      
-      // Filter functionality
-      const applyFilters = document.getElementById('applyFilters');
-      const resetFilters = document.getElementById('resetFilters');
-      const typeFilter = document.getElementById('type-filter');
-      const statusFilter = document.getElementById('status-filter');
-      const dateFilter = document.getElementById('date-filter');
-      
-      if (applyFilters) {
-        applyFilters.addEventListener('click', function() {
-          // Filter logic here
-          const notifications = document.querySelectorAll('.notification-item');
-          
-          notifications.forEach(notification => {
-            let shouldShow = true;
-            
-            // Status filter
-            if (statusFilter.value === 'read') {
-              shouldShow = !notification.classList.contains('bg-blue-50');
-            } else if (statusFilter.value === 'unread') {
-              shouldShow = notification.classList.contains('bg-blue-50');
-            }
-            
-            // Apply filtering
-            notification.style.display = shouldShow ? '' : 'none';
-          });
-        });
-      }
-      
-      if (resetFilters) {
-        resetFilters.addEventListener('click', function() {
-          if (typeFilter) typeFilter.value = '';
-          if (statusFilter) statusFilter.value = '';
-          if (dateFilter) dateFilter.value = '';
-          
-          // Reset display of all notifications
-          document.querySelectorAll('.notification-item').forEach(notification => {
-            notification.style.display = '';
           });
         });
       }

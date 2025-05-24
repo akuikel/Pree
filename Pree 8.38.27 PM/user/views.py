@@ -367,7 +367,10 @@ def notifications(request):
         'unread_count': notifications.filter(is_read=False).count()
     }
 
-    return render(request, 'user/notifications.html', context) 
+    if request.user.user_type.lower() == 'home owner':
+            return render(request, 'user/homeowner_notifications.html', context)
+    else:
+            return render(request, 'user/tenant_notifications.html', context)
 
 @login_required
 def payment_details(request):
@@ -1635,7 +1638,10 @@ def settings_view(request):
         'profile': profile,
     }
     
-    return render(request, 'user/settings.html', context)
+    if request.user.user_type.lower() == 'home owner':
+        return render(request, 'user/homeowner_settings.html', context)
+    else:
+        return render(request, 'user/tenant_settings.html', context)
 
 @login_required
 def delete_lease(request, rental_id):

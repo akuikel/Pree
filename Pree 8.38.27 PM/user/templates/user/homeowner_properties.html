@@ -79,9 +79,10 @@
       </div>
       <nav class="menu">
         <ul>
-          <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-          <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li class="active"><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
           <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="/owner/maintenance/"><i class="fas fa-wrench"></i> <span>Maintenance</span></a></li>
           <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
           <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
           <li>
@@ -159,7 +160,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-500">Total Income</p>
-              <h3 class="text-2xl font-semibold">${{ total_income }}</h3>
+              <h3 class="text-2xl font-semibold">NPR {{ total_income }}</h3>
             </div>
             <div class="bg-yellow-100 p-3 rounded-lg">
               <span class="text-yellow-500 text-xl font-bold">Rs</span>
@@ -213,7 +214,7 @@
                 <span><i class="fas fa-home mr-1"></i> {{ property.get_property_type_display }}</span>
               </div>
               
-              <p class="text-gray-800 font-bold text-xl mb-4">${{ property.price }}</p>
+              <p class="text-gray-800 font-bold text-xl mb-4">NPR {{ property.price }}</p>
               
               <div class="flex items-center justify-between">
                 <div class="flex space-x-2">

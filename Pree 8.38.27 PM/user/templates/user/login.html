@@ -10,6 +10,15 @@
 
         <!-- Right Column: Login Form -->
         <div class="col-md-6">
+            <!-- Move messages ABOVE the card -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-3" style="display: none;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
             <div class="card">
                 <h2 class="text-center mb-4">Log In</h2>
                 <!-- General Form Errors -->

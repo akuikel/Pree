@@ -34,7 +34,7 @@
     }
 
     .dashboard-container {
-      display: flex; /* Changed from grid to flex */
+      display: flex;
       min-height: 100vh;
       position: relative;
     }
@@ -159,9 +159,9 @@
     .main-content {
       flex: 1;
       padding: 30px;
-      margin-left: 280px; /* Match sidebar width + padding */
+      margin-left: 280px;
       transition: all 0.3s ease;
-      width: calc(100% - 280px); /* Ensure content doesn't extend beyond viewport */
+      width: calc(100% - 280px);
     }
 
     .header {
@@ -271,6 +271,7 @@
       font-family: 'Poppins', sans-serif;
       font-size: 14px;
       transition: all 0.3s ease;
+      box-sizing: border-box;
     }
 
     .form-group input:focus,
@@ -545,7 +546,7 @@
 </head>
 <body>
   <div class="dashboard-container">
-    <!-- Sidebar -->
+    <!-- Homeowner Sidebar -->
     <aside class="sidebar">
       <!-- Logo Section -->
       <div class="logo-container">
@@ -555,16 +556,15 @@
       <nav class="menu">
         <ul>
           <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-          <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
-          <li class="active"><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
-          <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+          <li class="active"><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
+          <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
+          <li><a href="/owner/maintenance/"><i class="fas fa-wrench"></i> <span>Maintenance</span></a></li>
+          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
           <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="{% url 'homeowner_payment_history' %}"><i class="fas fa-wallet"></i> <span>Payment History</span></a></li>
+          <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+          <li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
           <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
-          <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-file-signature"></i> <span>Pending Leases</span></a></li>
-  <li>
-    <a href="{% url 'tenant_signed_leases' %}" class="nav-link">
-      <i class="fas fa-file-contract"></i> Signed Leases
-    </a></li>
         </ul>
       </nav>
       <div class="report">

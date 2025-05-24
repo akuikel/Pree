@@ -64,6 +64,15 @@
     .btn {
       transition: all 0.2s ease;
     }
+
+    /* Custom column widths */
+    .col-tenant { width: 18%; }
+    .col-property { width: 18%; }
+    .col-requested { width: 12%; }
+    .col-start { width: 12%; }
+    .col-end { width: 12%; }
+    .col-status { width: 10%; }
+    .col-actions { width: 18%; }
   </style>
 </head>
 <body class="bg-gray-100 font-poppins">
@@ -76,10 +85,11 @@
       </div>
       <nav class="menu">
         <ul>
-          <li class="active"><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
           <li><a href="{% url 'property_list' %}"><i class="fas fa-building"></i> <span>Properties</span></a></li>
           <li><a href="{% url 'booking_list' %}"><i class="fas fa-book"></i> <span>Bookings</span></a></li>
-          <li><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
+          <li><a href="/owner/maintenance/"><i class="fas fa-wrench"></i> <span>Maintenance</span></a></li>
+          <li class="active"><a href="{% url 'manage_rental_requests' %}"><i class="fas fa-clock"></i> <span>Rental Requests</span></a></li>
           <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
           <li>
             <a href="{% url 'homeowner_payment_history' %}">
@@ -90,7 +100,7 @@
           <li><a href="{% url 'homeowner_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
 <li><a href="{% url 'homeowner_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Completed Leases</span></a></li>
 
-          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settingsaaa</span></a></li>
         </ul>
         </ul>
       </nav>
@@ -121,63 +131,63 @@
       <!-- Rental Requests List -->
       {% if rental_requests %}
         <div class="bg-white rounded-lg shadow overflow-hidden">
-          <table class="min-w-full divide-y divide-gray-200">
+          <table class="min-w-full divide-y divide-gray-200 table-fixed">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested Date</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th scope="col" class="col-tenant px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
+                <th scope="col" class="col-property px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                <th scope="col" class="col-requested px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested</th>
+                <th scope="col" class="col-start px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start</th>
+                <th scope="col" class="col-end px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End</th>
+                <th scope="col" class="col-status px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" class="col-actions px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               {% for request in rental_requests %}
                 <tr>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="col-tenant px-4 py-4">
                     <div class="flex items-center">
-                      <div class="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-blue-500"></i>
+                      <div class="h-8 w-8 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-blue-500 text-xs"></i>
                       </div>
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">{{ request.tenant.get_full_name|default:request.tenant.email }}</div>
-                        <div class="text-sm text-gray-500">{{ request.tenant.email }}</div>
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900 truncate">{{ request.tenant.get_full_name|default:request.tenant.email }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ request.tenant.email }}</div>
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="col-property px-4 py-4">
                     <div class="flex items-center">
-                      <div class="h-10 w-10 flex-shrink-0">
+                      <div class="h-8 w-8 flex-shrink-0">
                         {% if request.property.image %}
-                          <img class="h-10 w-10 rounded-full object-cover" src="{{ request.property.image.url }}" alt="{{ request.property.title }}">
+                          <img class="h-8 w-8 rounded-full object-cover" src="{{ request.property.image.url }}" alt="{{ request.property.title }}">
                         {% else %}
-                          <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <i class="fas fa-home text-gray-400"></i>
+                          <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-home text-gray-400 text-xs"></i>
                           </div>
                         {% endif %}
                       </div>
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">{{ request.property.title }}</div>
-                        <div class="text-sm text-gray-500">${{ request.property.price }} / month</div>
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900 truncate">{{ request.property.title }}</div>
+                        <div class="text-xs text-gray-500">${{ request.property.price }}</div>
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td class="col-requested px-3 py-4 text-xs text-gray-500">
                     {{ request.requested_date|date:"M d, Y" }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td class="col-start px-3 py-4 text-xs text-gray-500">
                     {{ request.start_date|date:"M d, Y" }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td class="col-end px-3 py-4 text-xs text-gray-500">
                     {% if request.end_date %}
                       {{ request.end_date|date:"M d, Y" }}
                     {% else %}
                       N/A
                     {% endif %}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="col-status px-3 py-4">
                     {% if request.status == 'pending' %}
                       <span class="status-badge status-pending">Pending</span>
                     {% elif request.status == 'approved' %}
@@ -186,7 +196,7 @@
                       <span class="status-badge status-rejected">Rejected</span>
                     {% endif %}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td class="col-actions px-4 py-4 text-sm font-medium">
                     {% if request.status == 'pending' %}
                         <div style="display: flex !important; flex-direction: column !important; gap: 4px !important; align-items: flex-start !important;">
                             <form method="post" action="{% url 'rental_request_action' request.id %}" style="margin: 0 !important;">
@@ -230,4 +240,4 @@
     </main>
   </div>
 </body>
-</html> 
+</html>

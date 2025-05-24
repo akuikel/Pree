@@ -1,0 +1,300 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications | PayTrack</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #040404 0%, #000000 100%);
+      padding: 20px;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 40px 40px 40px 40px;
+      width: calc(100vw - 240px);
+      min-height: 100vh;
+      background: linear-gradient(120deg, #f8fafc 0%, #e2e8f0 100%);
+      box-sizing: border-box;
+    }
+    
+    /* Mobile responsive styles */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 1000;
+        transition: transform 0.3s;
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-poppins">
+  <div class="min-h-screen flex">
+    <!-- Tenant Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'images/logo.png' %}" alt="PayTrack Logo" class="logo">
+        <span>PayTrack</span>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+          <li><a href="{% url 'tenant_property_list' %}"><i class="fas fa-building"></i> <span>Available Properties</span></a></li>
+          <li><a href="{% url 'my_rentals' %}"><i class="fas fa-home"></i> <span>My Rentals</span></a></li>
+          <li><a href="/maintenance/requests/"><i class="fas fa-wrench"></i> <span>Maintenance Requests</span></a></li>
+          <li><a href="{% url 'rent_payments' %}"><i class="fas fa-wallet"></i> <span>Rent Payments</span></a></li>
+          <li class="active"><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a href="{% url 'settings' %}"><i class="fas fa-cogs"></i> <span>Settings</span></a></li>
+          <li><a href="{% url 'tenant_pending_leases' %}"><i class="fas fa-clock"></i> <span>Pending Leases</span></a></li>
+          <li><a href="{% url 'tenant_signed_leases' %}"><i class="fas fa-file-signature"></i> <span>Signed Leases</span></a></li>
+        </ul>
+      </nav>
+      <div class="mt-auto pt-8">
+        <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-red-500 hover:bg-red-100 rounded">
+          <i class="fas fa-sign-out-alt mr-3"></i> <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content space-y-10">
+      <!-- Header -->
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-semibold"><i class="fas fa-bell text-blue-600"></i> Notifications</h1>
+          <p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar-alt"></i> <span id="currentDateTime">Loading...</span></p>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="relative">
+          <input type="text" id="notificationSearch" placeholder="Search notifications..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <div class="absolute left-3 top-2.5 text-gray-400">
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Counter & Actions -->
+      <div class="bg-white p-6 rounded-lg shadow flex justify-between items-center">
+        <div class="flex items-center">
+          <h2 class="text-lg font-semibold">
+            <i class="fas fa-bell text-blue-600 mr-2"></i> 
+            All Notifications
+            {% if unread_count > 0 %}
+              <span class="ml-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full">{{ unread_count }}</span>
+            {% endif %}
+          </h2>
+        </div>
+        <button id="markAllRead" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+          <i class="fas fa-check-double mr-2"></i> Mark All as Read
+        </button>
+      </div>
+
+      <!-- Notifications List -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <div class="space-y-4" id="notificationsList">
+          {% if notifications %}
+            {% for notification in notifications %}
+              <div class="notification-item {% if not notification.is_read %}bg-blue-50 border-l-4 border-blue-500{% else %}bg-gray-50 border-l-4 border-gray-300{% endif %} p-4 rounded shadow-sm">
+                <div class="flex gap-4">
+                  <div class="{% if not notification.is_read %}text-blue-500{% else %}text-gray-400{% endif %} mt-1">
+                    <i class="fas fa-info-circle text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between">
+                      <h3 class="font-semibold text-gray-800">Notification</h3>
+                      <span class="text-xs text-gray-500">{{ notification.created_at|date:"M d, Y" }} at {{ notification.created_at|date:"h:i A" }}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-1">{{ notification.message }}</p>
+                    {% if not notification.is_read %}
+                      <div class="mt-3">
+                        <a href="#" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded inline-flex items-center mark-read-btn" data-id="{{ notification.id }}">
+                          <i class="fas fa-check mr-1"></i> Mark as Read
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-10 text-gray-500">
+              <i class="fas fa-bell-slash text-4xl mb-3 block"></i>
+              <p>No notifications found</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Set current date and time
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateElement = document.getElementById('currentDateTime');
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateElement.textContent = now.toLocaleDateString('en-US', options);
+      
+      // Mobile menu toggle
+      const menuToggle = document.createElement('button');
+      menuToggle.classList.add('menu-toggle');
+      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+      menuToggle.style.position = 'fixed';
+      menuToggle.style.top = '20px';
+      menuToggle.style.left = '20px';
+      menuToggle.style.zIndex = '1001';
+      menuToggle.style.background = '#040404';
+      menuToggle.style.color = 'white';
+      menuToggle.style.border = 'none';
+      menuToggle.style.borderRadius = '5px';
+      menuToggle.style.padding = '8px 10px';
+      menuToggle.style.display = 'none';
+      document.body.appendChild(menuToggle);
+      
+      function handleResize() {
+        if (window.innerWidth <= 768) {
+          menuToggle.style.display = 'block';
+        } else {
+          menuToggle.style.display = 'none';
+        }
+      }
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      
+      menuToggle.addEventListener('click', function() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+      });
+      
+      // Search functionality
+      const searchInput = document.getElementById('notificationSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          const notifications = document.querySelectorAll('.notification-item');
+          
+          notifications.forEach(notification => {
+            const content = notification.textContent.toLowerCase();
+            if (content.includes(searchTerm)) {
+              notification.style.display = '';
+            } else {
+              notification.style.display = 'none';
+            }
+          });
+        });
+      }
+      
+      // Mark as read functionality
+      document.querySelectorAll('.mark-read-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const notificationId = this.getAttribute('data-id');
+          const notificationItem = this.closest('.notification-item');
+          
+          fetch("{% url 'mark_notification_read' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({ id: notificationId })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              notificationItem.classList.remove('bg-blue-50', 'border-blue-500');
+              notificationItem.classList.add('bg-gray-50', 'border-gray-300');
+              this.remove();
+              
+              // Update unread count
+              const countBadges = document.querySelectorAll('.bg-red-500');
+              countBadges.forEach(badge => {
+                let count = parseInt(badge.textContent);
+                badge.textContent = count - 1;
+                if (count <= 1) {
+                  badge.style.display = 'none';
+                }
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        });
+      });
+      
+      // Mark all as read functionality
+      const markAllReadButton = document.getElementById('markAllRead');
+      if (markAllReadButton) {
+        markAllReadButton.addEventListener('click', function() {
+          fetch("{% url 'mark_all_notifications_read' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': '{{ csrf_token }}'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              // Update all unread notifications to read
+              document.querySelectorAll('.notification-item.bg-blue-50').forEach(item => {
+                item.classList.remove('bg-blue-50', 'border-blue-500');
+                item.classList.add('bg-gray-50', 'border-gray-300');
+                const readBtn = item.querySelector('.mark-read-btn');
+                if (readBtn) readBtn.remove();
+              });
+              
+              // Hide all badges
+              document.querySelectorAll('.bg-red-500').forEach(badge => {
+                badge.style.display = 'none';
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+{% endblock %}
